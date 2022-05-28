@@ -11,30 +11,35 @@ import {
   BigDecimal
 } from "@graphprotocol/graph-ts";
 
-export class ExampleEntity extends Entity {
+export class Land extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
 
-    this.set("count", Value.fromBigInt(BigInt.zero()));
-    this.set("landId", Value.fromBigInt(BigInt.zero()));
+    this.set("owner", Value.fromBytes(Bytes.empty()));
+    this.set("ownerIndex", Value.fromBigInt(BigInt.zero()));
+    this.set("time", Value.fromBigInt(BigInt.zero()));
     this.set("x1", Value.fromBigInt(BigInt.zero()));
+    this.set("x2", Value.fromBigInt(BigInt.zero()));
+    this.set("y1", Value.fromBigInt(BigInt.zero()));
+    this.set("y2", Value.fromBigInt(BigInt.zero()));
+    this.set("isNFT", Value.fromBoolean(false));
   }
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save ExampleEntity entity without an ID");
+    assert(id != null, "Cannot save Land entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        `Entities of type ExampleEntity must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        `Entities of type Land must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
       );
-      store.set("ExampleEntity", id.toString(), this);
+      store.set("Land", id.toString(), this);
     }
   }
 
-  static load(id: string): ExampleEntity | null {
-    return changetype<ExampleEntity | null>(store.get("ExampleEntity", id));
+  static load(id: string): Land | null {
+    return changetype<Land | null>(store.get("Land", id));
   }
 
   get id(): string {
@@ -46,22 +51,31 @@ export class ExampleEntity extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get count(): BigInt {
-    let value = this.get("count");
+  get owner(): Bytes {
+    let value = this.get("owner");
+    return value!.toBytes();
+  }
+
+  set owner(value: Bytes) {
+    this.set("owner", Value.fromBytes(value));
+  }
+
+  get ownerIndex(): BigInt {
+    let value = this.get("ownerIndex");
     return value!.toBigInt();
   }
 
-  set count(value: BigInt) {
-    this.set("count", Value.fromBigInt(value));
+  set ownerIndex(value: BigInt) {
+    this.set("ownerIndex", Value.fromBigInt(value));
   }
 
-  get landId(): BigInt {
-    let value = this.get("landId");
+  get time(): BigInt {
+    let value = this.get("time");
     return value!.toBigInt();
   }
 
-  set landId(value: BigInt) {
-    this.set("landId", Value.fromBigInt(value));
+  set time(value: BigInt) {
+    this.set("time", Value.fromBigInt(value));
   }
 
   get x1(): BigInt {
@@ -71,5 +85,165 @@ export class ExampleEntity extends Entity {
 
   set x1(value: BigInt) {
     this.set("x1", Value.fromBigInt(value));
+  }
+
+  get x2(): BigInt {
+    let value = this.get("x2");
+    return value!.toBigInt();
+  }
+
+  set x2(value: BigInt) {
+    this.set("x2", Value.fromBigInt(value));
+  }
+
+  get y1(): BigInt {
+    let value = this.get("y1");
+    return value!.toBigInt();
+  }
+
+  set y1(value: BigInt) {
+    this.set("y1", Value.fromBigInt(value));
+  }
+
+  get y2(): BigInt {
+    let value = this.get("y2");
+    return value!.toBigInt();
+  }
+
+  set y2(value: BigInt) {
+    this.set("y2", Value.fromBigInt(value));
+  }
+
+  get hash(): string | null {
+    let value = this.get("hash");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set hash(value: string | null) {
+    if (!value) {
+      this.unset("hash");
+    } else {
+      this.set("hash", Value.fromString(<string>value));
+    }
+  }
+
+  get isNFT(): boolean {
+    let value = this.get("isNFT");
+    return value!.toBoolean();
+  }
+
+  set isNFT(value: boolean) {
+    this.set("isNFT", Value.fromBoolean(value));
+  }
+}
+
+export class Particle extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("x", Value.fromBigInt(BigInt.zero()));
+    this.set("y", Value.fromBigInt(BigInt.zero()));
+    this.set("z", Value.fromBigInt(BigInt.zero()));
+    this.set("block", Value.fromString(""));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Particle entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type Particle must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("Particle", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Particle | null {
+    return changetype<Particle | null>(store.get("Particle", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get x(): BigInt {
+    let value = this.get("x");
+    return value!.toBigInt();
+  }
+
+  set x(value: BigInt) {
+    this.set("x", Value.fromBigInt(value));
+  }
+
+  get y(): BigInt {
+    let value = this.get("y");
+    return value!.toBigInt();
+  }
+
+  set y(value: BigInt) {
+    this.set("y", Value.fromBigInt(value));
+  }
+
+  get z(): BigInt {
+    let value = this.get("z");
+    return value!.toBigInt();
+  }
+
+  set z(value: BigInt) {
+    this.set("z", Value.fromBigInt(value));
+  }
+
+  get block(): string {
+    let value = this.get("block");
+    return value!.toString();
+  }
+
+  set block(value: string) {
+    this.set("block", Value.fromString(value));
+  }
+
+  get metaBlock(): string | null {
+    let value = this.get("metaBlock");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set metaBlock(value: string | null) {
+    if (!value) {
+      this.unset("metaBlock");
+    } else {
+      this.set("metaBlock", Value.fromString(<string>value));
+    }
+  }
+
+  get metaBlockProperties(): string | null {
+    let value = this.get("metaBlockProperties");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set metaBlockProperties(value: string | null) {
+    if (!value) {
+      this.unset("metaBlockProperties");
+    } else {
+      this.set("metaBlockProperties", Value.fromString(<string>value));
+    }
   }
 }
