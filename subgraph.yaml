@@ -8,7 +8,7 @@ dataSources:
     source:
       address: "0xf4315D6Ab7B18A5903d22f9dc17358C7bBA85b8F"
       abi: Utopia
-      startBlock: 27801347
+      startBlock: 22836768
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5

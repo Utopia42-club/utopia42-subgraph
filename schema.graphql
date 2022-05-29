@@ -1,8 +1,6 @@
 type Land @entity {
     id: ID!
-    owner: Bytes!
-    ownerIndex: BigInt!
-    time: BigInt!
+    owner: Bytes!,
     x1: BigInt!
     x2: BigInt!
     y1: BigInt!
