@@ -150,6 +150,7 @@ export class Particle extends Entity {
     this.set("y", Value.fromBigInt(BigInt.zero()));
     this.set("z", Value.fromBigInt(BigInt.zero()));
     this.set("block", Value.fromString(""));
+    this.set("hash", Value.fromString(""));
   }
 
   save(): void {
@@ -245,5 +246,55 @@ export class Particle extends Entity {
     } else {
       this.set("metaBlockProperties", Value.fromString(<string>value));
     }
+  }
+
+  get hash(): string {
+    let value = this.get("hash");
+    return value!.toString();
+  }
+
+  set hash(value: string) {
+    this.set("hash", Value.fromString(value));
+  }
+}
+
+export class IpfsData extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save IpfsData entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type IpfsData must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("IpfsData", id.toString(), this);
+    }
+  }
+
+  static load(id: string): IpfsData | null {
+    return changetype<IpfsData | null>(store.get("IpfsData", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get particles(): Array<string> {
+    let value = this.get("particles");
+    return value!.toStringArray();
+  }
+
+  set particles(value: Array<string>) {
+    this.set("particles", Value.fromStringArray(value));
   }
 }

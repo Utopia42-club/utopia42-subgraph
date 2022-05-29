@@ -1,22 +1,28 @@
 type Land @entity {
-  id: ID!,
-  owner: Bytes!,
-  ownerIndex: BigInt!,
-  time: BigInt!,
-  x1: BigInt!,
-  x2: BigInt!,
-  y1: BigInt!,
-  y2: BigInt!,
-  hash: String,
-  isNFT: Boolean!
+    id: ID!
+    owner: Bytes!
+    ownerIndex: BigInt!
+    time: BigInt!
+    x1: BigInt!
+    x2: BigInt!
+    y1: BigInt!
+    y2: BigInt!
+    hash: IpfsData
+    isNFT: Boolean!
 }
 
 type Particle @entity {
-  id: ID!,
-  x: BigInt!,
-  y: BigInt!,
-  z: BigInt!,
-  block: String!,
-  metaBlock: String,
-  metaBlockProperties: String
+    id: ID!
+    x: BigInt!
+    y: BigInt!
+    z: BigInt!
+    block: String!
+    metaBlock: String
+    metaBlockProperties: String
+    hash: IpfsData!
+}
+
+type IpfsData @entity {
+    id: ID!
+    particles: [Particle!]! @derivedFrom(field: "hash")
 }
