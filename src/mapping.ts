@@ -1,23 +1,9 @@
-import { IpfsData, Land, Particle } from "./../generated/schema";
-import {
-    log,
-    ipfs,
-    json,
-    JSONValue,
-    TypedMap,
-    store,
-    BigInt,
-} from "@graphprotocol/graph-ts";
-import {
-    Assign,
-    Burn,
-    LandUpdate,
-    RoleAdminChanged,
-    RoleGranted,
-    RoleRevoked,
-} from "../generated/Utopia/Utopia";
+import { IpfsData, Land, Particle } from "../generated/schema";
+import { BigInt, ipfs, json, JSONValue, log, store, TypedMap, } from "@graphprotocol/graph-ts";
+import { Assign, Burn, LandUpdate, RoleAdminChanged, RoleGranted, RoleRevoked, } from "../generated/Utopia/Utopia";
 
-export function handleAssign(event: Assign): void {
+export function handleAssign(event: Assign): void
+{
     const hash = event.params.hash;
     if (hash && hash.length !== 0) {
         if (IpfsData.load(hash) !== null) {
@@ -39,7 +25,8 @@ export function handleAssign(event: Assign): void {
     );
 }
 
-export function handleLandUpdate(event: LandUpdate): void {
+export function handleLandUpdate(event: LandUpdate): void
+{
     const landId = event.params.landId.toString();
     const land = Land.load(landId);
     if (land === null) {
@@ -70,7 +57,8 @@ export function handleLandUpdate(event: LandUpdate): void {
     );
 }
 
-function createLand(event: Assign, hash: string | null): void {
+function createLand(event: Assign, hash: string | null): void
+{
     const landId = event.params.landId.toString();
     if (Land.load(landId) !== null) {
         log.warning(
@@ -90,7 +78,8 @@ function createLand(event: Assign, hash: string | null): void {
     land.save();
 }
 
-function parseIpfsData(hash: string): void {
+function parseIpfsData(hash: string): void
+{
     const bytes = ipfs.cat(hash);
     if (bytes === null) return;
 
@@ -127,7 +116,8 @@ function parseIpfsData(hash: string): void {
 function parseChanges(
     changes: TypedMap<string, JSONValue>,
     particles: TypedMap<string, Particle>
-): void {
+): void
+{
     for (let i: i32 = 0; i < changes.entries.length; i++) {
         const entry = changes.entries[i];
         const key = entry.key.toString();
@@ -153,7 +143,8 @@ function parseChanges(
 function parseMetaData(
     metaData: TypedMap<string, JSONValue>,
     particles: TypedMap<string, Particle>
-): void {
+): void
+{
     for (let i: i32 = 0; i < metaData.entries.length; i++) {
         const entry = metaData.entries[i];
 
@@ -175,10 +166,18 @@ function parseMetaData(
     }
 }
 
-export function handleBurn(event: Burn): void {}
+export function handleBurn(event: Burn): void
+{
+}
 
-export function handleRoleAdminChanged(event: RoleAdminChanged): void {}
+export function handleRoleAdminChanged(event: RoleAdminChanged): void
+{
+}
 
-export function handleRoleGranted(event: RoleGranted): void {}
+export function handleRoleGranted(event: RoleGranted): void
+{
+}
 
-export function handleRoleRevoked(event: RoleRevoked): void {}
+export function handleRoleRevoked(event: RoleRevoked): void
+{
+}
