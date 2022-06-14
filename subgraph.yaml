@@ -17,9 +17,9 @@ dataSources:
         - Assign
         - Burn
         - LandUpdate
-        - RoleAdminChanged
-        - RoleGranted
-        - RoleRevoked
+#        - RoleAdminChanged
+#        - RoleGranted
+#        - RoleRevoked
       abis:
         - name: Utopia
           file: ./abis/Utopia.json
@@ -30,10 +30,37 @@ dataSources:
           handler: handleBurn
         - event: LandUpdate(uint256,string)
           handler: handleLandUpdate
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
-          handler: handleRoleAdminChanged
-        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleGranted
-        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleRevoked
+#        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+#          handler: handleRoleAdminChanged
+#        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+#          handler: handleRoleGranted
+#        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+#          handler: handleRoleRevoked
+      file: ./src/mapping.ts
+
+  - kind: ethereum
+    name: UtopiaNFT
+    network: matic
+    source:
+      address: "0x6dcd83daaf43560e8692c58bf02f36d647c32716"
+      abi: UtopiaNFT
+      startBlock: 22804205
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - Transfer
+      abis:
+        - name: UtopiaNFT
+          file: ./abis/UtopiaNFT.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleNFTTransfer
+      #        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+      #          handler: handleRoleAdminChanged
+      #        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+      #          handler: handleRoleGranted
+      #        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+      #          handler: handleRoleRevoked
       file: ./src/mapping.ts

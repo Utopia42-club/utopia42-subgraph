@@ -12,15 +12,19 @@ import {
 } from "@graphprotocol/graph-ts";
 
 export class Land extends Entity {
-  constructor(id: string) {
+  constructor(id: Bytes) {
     super();
-    this.set("id", Value.fromString(id));
+    this.set("id", Value.fromBytes(id));
 
+    this.set("contract", Value.fromBytes(Bytes.empty()));
+    this.set("landId", Value.fromBigInt(BigInt.zero()));
     this.set("owner", Value.fromBytes(Bytes.empty()));
     this.set("x1", Value.fromBigInt(BigInt.zero()));
     this.set("x2", Value.fromBigInt(BigInt.zero()));
     this.set("y1", Value.fromBigInt(BigInt.zero()));
     this.set("y2", Value.fromBigInt(BigInt.zero()));
+    this.set("create_time", Value.fromBigInt(BigInt.zero()));
+    this.set("update_time", Value.fromBigInt(BigInt.zero()));
     this.set("isNFT", Value.fromBoolean(false));
   }
 
@@ -29,24 +33,42 @@ export class Land extends Entity {
     assert(id != null, "Cannot save Land entity without an ID");
     if (id) {
       assert(
-        id.kind == ValueKind.STRING,
-        `Entities of type Land must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        id.kind == ValueKind.BYTES,
+        `Entities of type Land must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
       );
-      store.set("Land", id.toString(), this);
+      store.set("Land", id.toBytes().toHexString(), this);
     }
   }
 
-  static load(id: string): Land | null {
-    return changetype<Land | null>(store.get("Land", id));
+  static load(id: Bytes): Land | null {
+    return changetype<Land | null>(store.get("Land", id.toHexString()));
   }
 
-  get id(): string {
+  get id(): Bytes {
     let value = this.get("id");
-    return value!.toString();
+    return value!.toBytes();
   }
 
-  set id(value: string) {
-    this.set("id", Value.fromString(value));
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
+  }
+
+  get contract(): Bytes {
+    let value = this.get("contract");
+    return value!.toBytes();
+  }
+
+  set contract(value: Bytes) {
+    this.set("contract", Value.fromBytes(value));
+  }
+
+  get landId(): BigInt {
+    let value = this.get("landId");
+    return value!.toBigInt();
+  }
+
+  set landId(value: BigInt) {
+    this.set("landId", Value.fromBigInt(value));
   }
 
   get owner(): Bytes {
@@ -94,8 +116,26 @@ export class Land extends Entity {
     this.set("y2", Value.fromBigInt(value));
   }
 
-  get hash(): string | null {
-    let value = this.get("hash");
+  get create_time(): BigInt {
+    let value = this.get("create_time");
+    return value!.toBigInt();
+  }
+
+  set create_time(value: BigInt) {
+    this.set("create_time", Value.fromBigInt(value));
+  }
+
+  get update_time(): BigInt {
+    let value = this.get("update_time");
+    return value!.toBigInt();
+  }
+
+  set update_time(value: BigInt) {
+    this.set("update_time", Value.fromBigInt(value));
+  }
+
+  get ipfsData(): string | null {
+    let value = this.get("ipfsData");
     if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
@@ -103,11 +143,11 @@ export class Land extends Entity {
     }
   }
 
-  set hash(value: string | null) {
+  set ipfsData(value: string | null) {
     if (!value) {
-      this.unset("hash");
+      this.unset("ipfsData");
     } else {
-      this.set("hash", Value.fromString(<string>value));
+      this.set("ipfsData", Value.fromString(<string>value));
     }
   }
 
@@ -122,15 +162,16 @@ export class Land extends Entity {
 }
 
 export class Particle extends Entity {
-  constructor(id: string) {
+  constructor(id: Bytes) {
     super();
-    this.set("id", Value.fromString(id));
+    this.set("id", Value.fromBytes(id));
 
+    this.set("contract", Value.fromBytes(Bytes.empty()));
     this.set("x", Value.fromBigInt(BigInt.zero()));
     this.set("y", Value.fromBigInt(BigInt.zero()));
     this.set("z", Value.fromBigInt(BigInt.zero()));
     this.set("block", Value.fromString(""));
-    this.set("hash", Value.fromString(""));
+    this.set("ipfsData", Value.fromString(""));
   }
 
   save(): void {
@@ -138,24 +179,33 @@ export class Particle extends Entity {
     assert(id != null, "Cannot save Particle entity without an ID");
     if (id) {
       assert(
-        id.kind == ValueKind.STRING,
-        `Entities of type Particle must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        id.kind == ValueKind.BYTES,
+        `Entities of type Particle must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
       );
-      store.set("Particle", id.toString(), this);
+      store.set("Particle", id.toBytes().toHexString(), this);
     }
   }
 
-  static load(id: string): Particle | null {
-    return changetype<Particle | null>(store.get("Particle", id));
+  static load(id: Bytes): Particle | null {
+    return changetype<Particle | null>(store.get("Particle", id.toHexString()));
   }
 
-  get id(): string {
+  get id(): Bytes {
     let value = this.get("id");
-    return value!.toString();
+    return value!.toBytes();
   }
 
-  set id(value: string) {
-    this.set("id", Value.fromString(value));
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
+  }
+
+  get contract(): Bytes {
+    let value = this.get("contract");
+    return value!.toBytes();
+  }
+
+  set contract(value: Bytes) {
+    this.set("contract", Value.fromBytes(value));
   }
 
   get x(): BigInt {
@@ -228,13 +278,13 @@ export class Particle extends Entity {
     }
   }
 
-  get hash(): string {
-    let value = this.get("hash");
+  get ipfsData(): string {
+    let value = this.get("ipfsData");
     return value!.toString();
   }
 
-  set hash(value: string) {
-    this.set("hash", Value.fromString(value));
+  set ipfsData(value: string) {
+    this.set("ipfsData", Value.fromString(value));
   }
 }
 
@@ -242,6 +292,8 @@ export class IpfsData extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
+
+    this.set("loaded", Value.fromBoolean(false));
   }
 
   save(): void {
@@ -269,12 +321,21 @@ export class IpfsData extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get particles(): Array<string> {
-    let value = this.get("particles");
-    return value!.toStringArray();
+  get loaded(): boolean {
+    let value = this.get("loaded");
+    return value!.toBoolean();
   }
 
-  set particles(value: Array<string>) {
-    this.set("particles", Value.fromStringArray(value));
+  set loaded(value: boolean) {
+    this.set("loaded", Value.fromBoolean(value));
+  }
+
+  get particles(): Array<Bytes> {
+    let value = this.get("particles");
+    return value!.toBytesArray();
+  }
+
+  set particles(value: Array<Bytes>) {
+    this.set("particles", Value.fromBytesArray(value));
   }
 }

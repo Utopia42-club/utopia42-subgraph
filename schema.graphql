@@ -1,26 +1,32 @@
 type Land @entity {
-    id: ID!
-    owner: Bytes!,
+    id: Bytes!
+    contract: Bytes!
+    landId: BigInt!
+    owner: Bytes!
     x1: BigInt!
     x2: BigInt!
     y1: BigInt!
     y2: BigInt!
-    hash: IpfsData
+    create_time: BigInt!
+    update_time: BigInt!
+    ipfsData: IpfsData
     isNFT: Boolean!
 }
 
 type Particle @entity {
-    id: ID!
+    id: Bytes!
+    contract: Bytes!
     x: BigInt!
     y: BigInt!
     z: BigInt!
     block: String!
     metaBlock: String
     metaBlockProperties: String
-    hash: IpfsData!
+    ipfsData: IpfsData!
 }
 
 type IpfsData @entity {
     id: ID!
-    particles: [Particle!]! @derivedFrom(field: "hash")
+    loaded: Boolean!
+    particles: [Particle!]! @derivedFrom(field: "ipfsData")
 }

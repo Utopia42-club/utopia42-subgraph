@@ -1,135 +1,163 @@
 import { IpfsData, Land, Particle } from "../generated/schema";
-import { BigInt, ipfs, json, JSONValue, log, store, TypedMap, } from "@graphprotocol/graph-ts";
-import { Assign, Burn, LandUpdate, RoleAdminChanged, RoleGranted, RoleRevoked, } from "../generated/Utopia/Utopia";
+import { Address, BigInt, Bytes, ipfs, json, JSONValue, log, store, TypedMap, } from "@graphprotocol/graph-ts";
+import { Assign, Burn, LandUpdate, } from "../generated/Utopia/Utopia";
+import { Transfer } from "../generated/UtopiaNFT/UtopiaNFT";
+
+const contractMappings = new TypedMap<string, Address>();
+contractMappings.set("0x6dcd83daaf43560e8692c58bf02f36d647c32716",
+    Address.fromBytes(Bytes.fromHexString("0xf4315D6Ab7B18A5903d22f9dc17358C7bBA85b8F")));
 
 export function handleAssign(event: Assign): void
 {
-    const hash = event.params.hash;
-    if (hash && hash.length !== 0) {
-        if (IpfsData.load(hash) !== null) {
-            log.warning(
-                `Assign event ignored since the hash already exists. (Tx ${event.transaction.hash.toHexString()})`,
-                []
-            );
-            return;
-        }
-        new IpfsData(hash).save();
-        parseIpfsData(hash);
-        createLand(event, hash);
-        return;
-    }
-    createLand(event, null);
-    log.debug(
-        `Assign event handled (Tx ${event.transaction.hash.toHexString()})`,
-        []
-    );
-}
+    const transactionHash = event.transaction.hash.toHexString();
+    log.debug("Handling Assign event (Tx {})", [transactionHash]);
 
-export function handleLandUpdate(event: LandUpdate): void
-{
-    const landId = event.params.landId.toString();
-    const land = Land.load(landId);
-    if (land === null) {
-        log.warning(
-            `LandUpdate event ignored since no land with id ${landId} exists. (Tx ${event.transaction.hash.toHexString()})`,
-            []
-        );
+    const contract = event.transaction.to;
+    if (contract === null) {
+        log.warning("Transaction sent to null. ({})", [event.transaction.hash.toHexString()]);
         return;
     }
 
-    const oldHash = land.hash;
-    if (oldHash !== null) {
-        log.debug(`Removing old particles of hash ${oldHash}`, [])
-        const ipfsData = IpfsData.load(oldHash);
-        if (ipfsData !== null) {
-            ipfsData.particles.forEach((particleId) => {
-                store.remove("Particle", particleId);
-            });
-            store.remove("IpfsData", oldHash);
-        }
-    }
-    const hash = event.params.hash;
-    new IpfsData(hash).save();
-    parseIpfsData(hash);
-    log.debug(
-        `Update event handled (Tx ${event.transaction.hash.toHexString()})`,
-        []
-    );
-}
+    const landId = event.params.landId;
+    const id = calculateLandId(contract, landId);
 
-function createLand(event: Assign, hash: string | null): void
-{
-    const landId = event.params.landId.toString();
-    if (Land.load(landId) !== null) {
-        log.warning(
-            `Land ${landId} already exists. (Tx ${event.transaction.hash.toHexString()})`,
-            []
-        );
+    if (Land.load(id) !== null) {
+        log.warning("Land {} on contract {} already exists. (Tx {})",
+            [landId.toString(), contract.toHexString(), transactionHash]);
         return;
     }
-    const land = new Land(landId);
+
+    const ipfsKey = event.params.hash;
+    const ipfsKeyAvailable = ipfsKey !== null && ipfsKey.length !== 0;
+    if (ipfsKeyAvailable && IpfsData.load(ipfsKey) !== null) {
+        log.warning(`Assign event ignored since the ipfs key already exists. (Tx {})`, [transactionHash]);
+        return;
+    }
+
+    const land = new Land(id);
+    land.contract = contract;
+    land.landId = landId;
+    land.owner = event.params.owner;
     land.x1 = event.params.x1;
     land.x2 = event.params.x2;
     land.y1 = event.params.y1;
     land.y2 = event.params.y2;
+    land.create_time = event.block.timestamp;
+    land.update_time = event.block.timestamp;
     land.isNFT = false;
-    land.owner = event.params.owner;
-    if (hash) land.hash = hash;
+
+    let ipfsData: IpfsData | null = null;
+    if (ipfsKeyAvailable) {
+        ipfsData = new IpfsData(ipfsKey);
+        ipfsData.save();
+        land.ipfsData = ipfsKey;
+    }
+
+    land.save();
+
+    // if (ipfsData !== null)
+    //     loadIpfsData(contract, ipfsData);
+}
+
+export function handleLandUpdate(event: LandUpdate): void
+{
+    const transactionHash = event.transaction.hash.toHexString();
+    log.debug("Handling LandUpdate event (Tx {})", [transactionHash]);
+
+    const contract = event.transaction.to;
+    if (contract === null) {
+        log.warning("Transaction sent to null. ({})", [transactionHash]);
+        return;
+    }
+
+    const landId = event.params.landId;
+    const id = calculateLandId(contract, landId);
+
+    const land = Land.load(id);
+    if (land === null) {
+        log.warning("LandUpdate event ignored since no land with id {} exists on contract {}. (Tx {})",
+            [landId.toString(), contract.toHexString(), transactionHash]);
+        return;
+    }
+
+    const oldIpfsKey = land.ipfsData;
+    if (oldIpfsKey !== null) {
+        log.debug("Removing old particles of hash {}", [oldIpfsKey])
+        const ipfsData = IpfsData.load(oldIpfsKey);
+        if (ipfsData !== null) {
+            // ipfsData.particles.forEach((particleId) => {
+            //     store.remove("Particle", particleId.toHexString());
+            // });
+            store.remove("IpfsData", oldIpfsKey);
+        }
+    }
+    const ipfsKey = event.params.hash;
+    let ipfsData = new IpfsData(ipfsKey);
+    ipfsData.save();
+    // loadIpfsData(contract, ipfsData);
+
+    land.ipfsData = ipfsKey;
+    land.update_time = event.block.timestamp;
     land.save();
 }
 
-function parseIpfsData(hash: string): void
+function loadIpfsData(contract: Address, ipfsData: IpfsData): void
 {
-    const bytes = ipfs.cat(hash);
-    if (bytes === null) return;
+    const ipfsKey = ipfsData.id;
+    log.debug("Loading ipfs data with key {}", [ipfsKey])
 
-    const result = json.try_fromBytes(bytes);
-    if (result === null) return;
+    const bytes = ipfs.cat(ipfsKey);
+    if (bytes === null) {
+        log.warning("IpfsData with key {} could not be loaded", [ipfsKey])
+        return;
+    }
 
-    const value = result._value;
-    if (value === null) return;
+    const data = json.try_fromBytes(bytes);
+    if (!data.isOk) {
+        log.warning("Json read from ipfs with key {} could not be deserialized", [ipfsKey])
+        return;
+    }
 
-    const data = value.inner;
-    if (data === null) return;
+    ipfsData.loaded = true;
+    ipfsData.save();
 
-    const obj = data.toObject();
+    const obj = data.value.toObject();
+    const particles = new TypedMap<string, Particle>();
 
     const changes = obj.get("changes");
     if (changes === null) return;
-
-    const particles = new TypedMap<string, Particle>();
+    parseChanges(contract, changes.toObject(), particles);
 
     const metadata = obj.get("metadata");
-
-    parseChanges(changes.toObject(), particles);
-    if (metadata) {
+    if (metadata)
         parseMetaData(metadata.toObject(), particles);
-    }
 
     for (let i: i32 = 0; i < particles.entries.length; i++) {
         const particle = particles.entries[i].value;
-        particle.hash = hash;
+        particle.ipfsData = ipfsKey;
         particle.save();
     }
 }
 
 function parseChanges(
+    contract: Address,
     changes: TypedMap<string, JSONValue>,
     particles: TypedMap<string, Particle>
 ): void
 {
     for (let i: i32 = 0; i < changes.entries.length; i++) {
         const entry = changes.entries[i];
-        const key = entry.key.toString();
-        if (Particle.load(key) !== null) {
-            log.warning(`Particle ${key} already exists`, []); // this should not happen
+        const key = entry.key;
+        const id = contract.concat(Bytes.fromUTF8(key));
+        if (Particle.load(id) !== null) {
+            log.warning(`Particle ${id} already exists`, []); // this should not happen
             continue;
         }
 
         const name = entry.value.toObject().get("name");
         if (name === null) continue;
 
-        const particle = new Particle(key);
+        const particle = new Particle(id);
         const x_y_z = key.split("_");
         if (x_y_z.length < 3) continue;
         particle.x = BigInt.fromString(x_y_z[0]);
@@ -148,7 +176,7 @@ function parseMetaData(
     for (let i: i32 = 0; i < metaData.entries.length; i++) {
         const entry = metaData.entries[i];
 
-        const key = entry.key.toString();
+        const key = entry.key;
         const particle = particles.get(key);
         if (particle === null) {
             log.warning(`No base block found for meta ${key}`, []);
@@ -168,16 +196,86 @@ function parseMetaData(
 
 export function handleBurn(event: Burn): void
 {
+    const transactionHash = event.transaction.hash.toHexString();
+    log.debug("Handling Burn event (Tx {})", [transactionHash]);
+
+    const contract = event.transaction.to;
+    if (contract === null) {
+        log.warning("Transaction sent to null. ({})", [transactionHash]);
+        return;
+    }
+
+    const landId = event.params.landId;
+    const id = calculateLandId(contract, landId);
+
+    const land = Land.load(id);
+    if (land === null) {
+        log.warning("Burn event ignored since no land with id {} exists on contract {}. (Tx {})",
+            [landId.toString(), contract.toHexString(), transactionHash]);
+        return;
+    }
+
+    store.remove('Land', id.toHexString()); // https://github.com/graphprotocol/docs/issues/115
 }
 
-export function handleRoleAdminChanged(event: RoleAdminChanged): void
+function calculateLandId(contract: Address, landId: BigInt): Bytes
 {
+    return contract.concat(Bytes.fromByteArray(Bytes.fromBigInt(landId)));
 }
 
-export function handleRoleGranted(event: RoleGranted): void
-{
-}
+// export function handleRoleAdminChanged(event: RoleAdminChanged): void
+// {
+// }
+//
+// export function handleRoleGranted(event: RoleGranted): void
+// {
+// }
+//
+// export function handleRoleRevoked(event: RoleRevoked): void
+// {
+// }
 
-export function handleRoleRevoked(event: RoleRevoked): void
+
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+
+export function handleNFTTransfer(event: Transfer): void
 {
+    const transactionHash = event.transaction.hash.toHexString();
+    log.debug("Handling Transfer event (Tx {})", [transactionHash]);
+
+    const nftContract = event.transaction.to;
+    if (nftContract === null) {
+        log.warning("Transaction sent to null. ({})", [transactionHash]);
+        return;
+    }
+
+    const from = event.params.from.toHexString();
+    const to = event.params.to.toHexString();
+    const landId = event.params.tokenId;
+
+    if (from === to || (from !== ZERO_ADDRESS && to !== ZERO_ADDRESS))
+        return;
+
+    const contract = contractMappings.get(nftContract.toHexString());
+    if (contract === null) {
+        log.warning("NFT contract does not have corresponding contract address. ({})", [transactionHash]);
+        return;
+    }
+
+    const id = calculateLandId(contract, landId);
+    const land = Land.load(id);
+    if (land === null) {
+        log.warning("NFT Transfer event ignored since no land with id {} exists on contract {}. (Tx {})",
+            [landId.toString(), contract.toHexString(), transactionHash]);
+        return;
+    }
+
+    if (from === ZERO_ADDRESS) {
+        land.isNFT = true;
+    } else if (to === ZERO_ADDRESS) {
+        land.isNFT = false;
+    }
+
+    land.update_time = event.block.timestamp;
+    land.save();
 }
