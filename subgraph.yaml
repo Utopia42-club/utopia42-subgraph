@@ -17,9 +17,6 @@ dataSources:
         - Assign
         - Burn
         - LandUpdate
-#        - RoleAdminChanged
-#        - RoleGranted
-#        - RoleRevoked
       abis:
         - name: Utopia
           file: ./abis/Utopia.json
@@ -30,12 +27,6 @@ dataSources:
           handler: handleBurn
         - event: LandUpdate(uint256,string)
           handler: handleLandUpdate
-#        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
-#          handler: handleRoleAdminChanged
-#        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
-#          handler: handleRoleGranted
-#        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
-#          handler: handleRoleRevoked
       file: ./src/mapping.ts
 
   - kind: ethereum
@@ -57,10 +48,4 @@ dataSources:
       eventHandlers:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleNFTTransfer
-      #        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
-      #          handler: handleRoleAdminChanged
-      #        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
-      #          handler: handleRoleGranted
-      #        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
-      #          handler: handleRoleRevoked
       file: ./src/mapping.ts
