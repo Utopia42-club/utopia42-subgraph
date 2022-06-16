@@ -1,17 +1,15 @@
 {
   "name": "utopia42-subgraph",
-  "license": "UNLICENSED",
   "scripts": {
     "codegen": "graph codegen",
-    "build": "graph build",
-    "deploy": "graph deploy --node https://api.thegraph.com/deploy/utopia42-club/utopia42-subgraph",
-    "create-local": "graph create --node http://localhost:8020/utopia42-club/utopia42-subgraph",
-    "remove-local": "graph remove --node http://localhost:8020/utopia42-club/utopia42-subgraph",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 utopia42-club/utopia42-subgraph"
+    "build matic": "graph build --network matic",
+    "build mumbai": "graph build --network mumbai",
+    "deploy matic": "graph deploy --network matic --product hosted-service utopia42-club/utopia42",
+    "deploy mumbai": "graph deploy --network mumbai --product hosted-service utopia42-club/utopia42-mumbai"
   },
   "dependencies": {
-    "@graphprotocol/graph-cli": "0.28.0",
-    "@graphprotocol/graph-ts": "0.26.0",
+    "@graphprotocol/graph-cli": "0.30.4",
+    "@graphprotocol/graph-ts": "0.27.0",
     "@graphprotocol/ipfs-sync": "^0.2.0"
   }
 }
