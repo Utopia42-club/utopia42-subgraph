@@ -1,11 +1,47 @@
-import { IpfsData, Land, Particle } from "../generated/schema";
+import { IpfsData, Land, Particle, Utopia, Factory, ERC721Contract } from "../generated/schema";
 import { Address, BigInt, Bytes, ipfs, json, JSONValue, log, store, TypedMap, } from "@graphprotocol/graph-ts";
-import { Assign, Burn, LandUpdate, } from "../generated/Utopia/Utopia";
-import { Transfer } from "../generated/UtopiaNFT/UtopiaNFT";
+import { Assign, Burn, LandUpdate, } from "../generated/templates/Utopia/Utopia";
+// import { Transfer } from "../generated/templates/UtopiaNFT/UtopiaNFT";
+import { LandCreated } from "../generated/UtopiaFactory/UtopiaFactory";
+import { Utopia as UtopiaCreator } from '../generated/templates'
+import { UtopiaNFT as UtopiaNFTCreator } from '../generated/templates'
+import { fetchERC721 } from "../fetch/erc721";
+import { fetchAccount } from "../fetch/account";
 
 const contractMappings = new TypedMap<string, Address>();
 contractMappings.set("0x6dcd83daaf43560e8692c58bf02f36d647c32716",
     Address.fromBytes(Bytes.fromHexString("0xf4315D6Ab7B18A5903d22f9dc17358C7bBA85b8F")));
+
+export function handleLandCreated(event: LandCreated): void {
+    const utopiaId = event.params.landAddress
+    let factory = Factory.load(utopiaId.toHex())
+    if (!factory) {
+        let owner = fetchAccount(event.params.owner)
+        factory = new Factory(utopiaId.toHex())
+        factory.factory = event.address
+        factory.utopiaAddress = event.params.landAddress
+        factory.collectionAddress = event.params.collectionAddress
+        factory.owner = owner.id
+        factory.createdAt = event.params.time
+        factory.blockNumber = event.block.number
+
+        let utopia = new Utopia(utopiaId.toHex())
+        utopia.owner = event.params.landAddress
+        utopia.utopia = factory.id
+        let utopiaNFT = fetchERC721(event.params.collectionAddress)
+        if (utopiaNFT) {
+            utopiaNFT.collection = factory.id
+            utopiaNFT.save()
+        }
+
+
+        UtopiaCreator.create(event.params.landAddress)
+        UtopiaNFTCreator.create(event.params.collectionAddress)
+        utopia.save()
+        factory.save()
+
+    }
+}
 
 export function handleAssign(event: Assign): void
 {
@@ -19,9 +55,9 @@ export function handleAssign(event: Assign): void
     }
 
     const landId = event.params.landId;
-    const id = calculateLandId(contract, landId);
+    // const id = calculateLandId(contract, landId);
 
-    if (Land.load(id) !== null) {
+    if (Land.load(landId.toString()) !== null) {
         log.warning("Land {} on contract {} already exists. (Tx {})",
             [landId.toString(), contract.toHexString(), transactionHash]);
         return;
@@ -33,25 +69,33 @@ export function handleAssign(event: Assign): void
         log.warning(`Assign event ignored since the ipfs key already exists. (Tx {})`, [transactionHash]);
         return;
     }
-
-    const land = new Land(id);
-    land.contract = contract;
-    land.landId = landId;
-    land.owner = event.params.owner;
-    land.x1 = event.params.x1;
-    land.x2 = event.params.x2;
-    land.y1 = event.params.y1;
-    land.y2 = event.params.y2;
-    land.create_time = event.block.timestamp;
-    land.update_time = event.block.timestamp;
-    land.isNFT = false;
-
-    let ipfsData: IpfsData | null = null;
-    if (ipfsKeyAvailable) {
-        ipfsData = new IpfsData(ipfsKey);
-        ipfsData.save();
-        land.ipfsData = ipfsKey;
+    let land = Land.load(landId.toString())
+    if (!land) {
+        land = new Land(landId.toString());
+        land.contract = contract.toHex();
+        land.landId = landId;
+        land.owner = event.params.owner;
+        land.x1 = event.params.x1;
+        land.x2 = event.params.x2;
+        land.y1 = event.params.y1;
+        land.y2 = event.params.y2;
+        land.create_time = event.block.timestamp;
+        land.update_time = event.block.timestamp;
+        land.isNFT = false;
+        land.save();
+    } else {
+        log.warning("Land {} is Note save)",
+            [landId.toString()]);
+        return;
     }
+
+
+    // let ipfsData: IpfsData | null = null;
+    // if (ipfsKeyAvailable) {
+    //     ipfsData = new IpfsData(ipfsKey);
+    //     ipfsData.save();
+    //     land.ipfsData = ipfsKey;
+    // }
 
     land.save();
 
@@ -73,7 +117,7 @@ export function handleLandUpdate(event: LandUpdate): void
     const landId = event.params.landId;
     const id = calculateLandId(contract, landId);
 
-    const land = Land.load(id);
+    const land = Land.load(id.toHex());
     if (land === null) {
         log.warning("LandUpdate event ignored since no land with id {} exists on contract {}. (Tx {})",
             [landId.toString(), contract.toHexString(), transactionHash]);
@@ -149,7 +193,7 @@ function parseChanges(
         const entry = changes.entries[i];
         const key = entry.key;
         const id = contract.concat(Bytes.fromUTF8(key));
-        if (Particle.load(id) !== null) {
+        if (Particle.load(id.toHex()) !== null) {
             log.warning(`Particle ${id} already exists`, []); // this should not happen
             continue;
         }
@@ -157,7 +201,7 @@ function parseChanges(
         const name = entry.value.toObject().get("name");
         if (name === null) continue;
 
-        const particle = new Particle(id);
+        const particle = new Particle(id.toHex());
         const x_y_z = key.split("_");
         if (x_y_z.length < 3) continue;
         particle.x = BigInt.fromString(x_y_z[0]);
@@ -208,7 +252,7 @@ export function handleBurn(event: Burn): void
     const landId = event.params.landId;
     const id = calculateLandId(contract, landId);
 
-    const land = Land.load(id);
+    const land = Land.load(id.toHex());
     if (land === null) {
         log.warning("Burn event ignored since no land with id {} exists on contract {}. (Tx {})",
             [landId.toString(), contract.toHexString(), transactionHash]);
@@ -223,59 +267,48 @@ function calculateLandId(contract: Address, landId: BigInt): Bytes
     return contract.concat(Bytes.fromByteArray(Bytes.fromBigInt(landId)));
 }
 
-// export function handleRoleAdminChanged(event: RoleAdminChanged): void
-// {
-// }
-//
-// export function handleRoleGranted(event: RoleGranted): void
-// {
-// }
-//
-// export function handleRoleRevoked(event: RoleRevoked): void
-// {
-// }
 
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
-export function handleNFTTransfer(event: Transfer): void
-{
-    const transactionHash = event.transaction.hash.toHexString();
-    log.debug("Handling Transfer event (Tx {})", [transactionHash]);
+// export function handleNFTTransfer(event: Transfer): void
+// {
+//     const transactionHash = event.transaction.hash.toHexString();
+//     log.debug("Handling Transfer event (Tx {})", [transactionHash]);
 
-    const nftContract = event.transaction.to;
-    if (nftContract === null) {
-        log.warning("Transaction sent to null. ({})", [transactionHash]);
-        return;
-    }
+//     const nftContract = event.transaction.to;
+//     if (nftContract === null) {
+//         log.warning("Transaction sent to null. ({})", [transactionHash]);
+//         return;
+//     }
 
-    const from = event.params.from.toHexString();
-    const to = event.params.to.toHexString();
-    const landId = event.params.tokenId;
+//     const from = event.params.from.toHexString();
+//     const to = event.params.to.toHexString();
+//     const landId = event.params.tokenId;
 
-    if (from === to || (from !== ZERO_ADDRESS && to !== ZERO_ADDRESS))
-        return;
+//     if (from === to || (from !== ZERO_ADDRESS && to !== ZERO_ADDRESS))
+//         return;
 
-    const contract = contractMappings.get(nftContract.toHexString());
-    if (contract === null) {
-        log.warning("NFT contract does not have corresponding contract address. ({})", [transactionHash]);
-        return;
-    }
+//     const contract = contractMappings.get(nftContract.toHexString());
+//     if (contract === null) {
+//         log.warning("NFT contract does not have corresponding contract address. ({})", [transactionHash]);
+//         return;
+//     }
 
-    const id = calculateLandId(contract, landId);
-    const land = Land.load(id);
-    if (land === null) {
-        log.warning("NFT Transfer event ignored since no land with id {} exists on contract {}. (Tx {})",
-            [landId.toString(), contract.toHexString(), transactionHash]);
-        return;
-    }
+//     const id = calculateLandId(contract, landId);
+//     const land = Land.load(id.toHex());
+//     if (land === null) {
+//         log.warning("NFT Transfer event ignored since no land with id {} exists on contract {}. (Tx {})",
+//             [landId.toString(), contract.toHexString(), transactionHash]);
+//         return;
+//     }
 
-    if (from === ZERO_ADDRESS) {
-        land.isNFT = true;
-    } else if (to === ZERO_ADDRESS) {
-        land.isNFT = false;
-    }
+//     if (from === ZERO_ADDRESS) {
+//         land.isNFT = true;
+//     } else if (to === ZERO_ADDRESS) {
+//         land.isNFT = false;
+//     }
 
-    land.update_time = event.block.timestamp;
-    land.save();
-}
+//     land.update_time = event.block.timestamp;
+//     land.save();
+// }
