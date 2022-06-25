@@ -32,6 +32,13 @@ type Land @entity {
     isNFT: Boolean!
 }
 
+type BurnedLand @entity {
+    id: Bytes!
+    contract: Bytes!
+    landId: BigInt!
+    time: BigInt!
+}
+
 type Particle @entity {
     id: ID!
     contract: Bytes!

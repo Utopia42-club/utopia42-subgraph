@@ -336,6 +336,71 @@ export class Land extends Entity {
   }
 }
 
+export class BurnedLand extends Entity {
+  constructor(id: Bytes) {
+    super();
+    this.set("id", Value.fromBytes(id));
+
+    this.set("contract", Value.fromBytes(Bytes.empty()));
+    this.set("landId", Value.fromBigInt(BigInt.zero()));
+    this.set("time", Value.fromBigInt(BigInt.zero()));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save BurnedLand entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.BYTES,
+        `Entities of type BurnedLand must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("BurnedLand", id.toBytes().toHexString(), this);
+    }
+  }
+
+  static load(id: Bytes): BurnedLand | null {
+    return changetype<BurnedLand | null>(
+      store.get("BurnedLand", id.toHexString())
+    );
+  }
+
+  get id(): Bytes {
+    let value = this.get("id");
+    return value!.toBytes();
+  }
+
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
+  }
+
+  get contract(): Bytes {
+    let value = this.get("contract");
+    return value!.toBytes();
+  }
+
+  set contract(value: Bytes) {
+    this.set("contract", Value.fromBytes(value));
+  }
+
+  get landId(): BigInt {
+    let value = this.get("landId");
+    return value!.toBigInt();
+  }
+
+  set landId(value: BigInt) {
+    this.set("landId", Value.fromBigInt(value));
+  }
+
+  get time(): BigInt {
+    let value = this.get("time");
+    return value!.toBigInt();
+  }
+
+  set time(value: BigInt) {
+    this.set("time", Value.fromBigInt(value));
+  }
+}
+
 export class Particle extends Entity {
   constructor(id: string) {
     super();
