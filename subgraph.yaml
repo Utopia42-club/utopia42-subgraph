@@ -6,9 +6,9 @@ dataSources:
     name: UtopiaFactory
     network: rinkeby
     source:
-      address: "0xd7681eDa26eA9234b4E2E203392c1F7A13dC8F4F"
+      address: "0x85E92443E61760A28F8Ad90A5D478D015896b556"
       abi: UtopiaFactory
-      startBlock: 10862720
+      startBlock: 10914903
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5

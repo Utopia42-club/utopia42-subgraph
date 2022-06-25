@@ -33,7 +33,7 @@ type Land @entity {
 }
 
 type BurnedLand @entity {
-    id: Bytes!
+    id: ID!
     contract: Bytes!
     landId: BigInt!
     time: BigInt!

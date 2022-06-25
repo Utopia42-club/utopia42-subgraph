@@ -337,9 +337,9 @@ export class Land extends Entity {
 }
 
 export class BurnedLand extends Entity {
-  constructor(id: Bytes) {
+  constructor(id: string) {
     super();
-    this.set("id", Value.fromBytes(id));
+    this.set("id", Value.fromString(id));
 
     this.set("contract", Value.fromBytes(Bytes.empty()));
     this.set("landId", Value.fromBigInt(BigInt.zero()));
@@ -351,26 +351,25 @@ export class BurnedLand extends Entity {
     assert(id != null, "Cannot save BurnedLand entity without an ID");
     if (id) {
       assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type BurnedLand must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        id.kind == ValueKind.STRING,
+        "Cannot save BurnedLand entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
       );
-      store.set("BurnedLand", id.toBytes().toHexString(), this);
+      store.set("BurnedLand", id.toString(), this);
     }
   }
 
-  static load(id: Bytes): BurnedLand | null {
-    return changetype<BurnedLand | null>(
-      store.get("BurnedLand", id.toHexString())
-    );
+  static load(id: string): BurnedLand | null {
+    return changetype<BurnedLand | null>(store.get("BurnedLand", id));
   }
 
-  get id(): Bytes {
+  get id(): string {
     let value = this.get("id");
-    return value!.toBytes();
+    return value!.toString();
   }
 
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
   }
 
   get contract(): Bytes {
