@@ -1,22 +1,49 @@
-specVersion: 0.0.4
+specVersion: 0.0.2
 schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum
-    name: Utopia
-    network: mumbai
+    name: UtopiaFactory
+    network: rinkeby
     source:
-      abi: Utopia
-      address: "0xDfDDbd9d7Cfc48Ab8b4BbA8ec7E00A7B098544f4"
-      startBlock: 26419498
+      address: "0x85E92443E61760A28F8Ad90A5D478D015896b556"
+      abi: UtopiaFactory
+      startBlock: 10914903
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
-        - Assign
-        - Burn
-        - LandUpdate
+        - LandCreated
+      abis:
+        - name: UtopiaFactory
+          file: ./abis/UtopiaFactory.json
+        - name: Utopia
+          file: ./abis/Utopia.json
+        - name: UtopiaNFT
+          file: ./abis/UtopiaNFT.json
+      eventHandlers:
+        - event: LandCreated(address,uint256,address,address)
+          handler: handleLandCreated
+      file: ./src/mapping.ts
+
+
+templates:
+  - kind: ethereum/contract
+    name: Utopia
+    network: rinkeby
+    source:
+      abi: Utopia
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/mapping.ts
+      entities:
+        - Utopia
+        - Land
+        # - Particle
+        # - IpfsData
       abis:
         - name: Utopia
           file: ./abis/Utopia.json
@@ -27,24 +54,26 @@ dataSources:
           handler: handleBurn
         - event: LandUpdate(uint256,string)
           handler: handleLandUpdate
-      file: ./src/mapping.ts
-  - kind: ethereum
+
+  - kind: ethereum/contract
     name: UtopiaNFT
-    network: mumbai
+    network: rinkeby
     source:
       abi: UtopiaNFT
-      address: "0x26d6659A027fc815C61Dc2410c4d2e124b7a3141"
-      startBlock: 26475204
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
       language: wasm/assemblyscript
+      file: ./src/erc721.ts
       entities:
-        - Transfer
+        - ERC721Contract
       abis:
         - name: UtopiaNFT
           file: ./abis/UtopiaNFT.json
       eventHandlers:
+        - event: Approval(indexed address,indexed address,indexed uint256)
+          handler: handleApproval
+        - event: ApprovalForAll(indexed address,indexed address,bool)
+          handler: handleApprovalForAll
         - event: Transfer(indexed address,indexed address,indexed uint256)
-          handler: handleNFTTransfer
-      file: ./src/mapping.ts
+          handler: handleTransfer
