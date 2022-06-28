@@ -26,7 +26,7 @@ export function handleLandCreated(event: LandCreated): void {
         factory.blockNumber = event.block.number
 
         let utopia = new Utopia(utopiaId.toHex())
-        utopia.owner = event.params.landAddress
+        utopia.owner = event.params.owner
         utopia.utopia = factory.id
         let utopiaNFT = fetchERC721(event.params.collectionAddress)
         if (utopiaNFT) {
