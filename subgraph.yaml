@@ -1,4 +1,4 @@
-specVersion: 0.0.2
+specVersion: 0.0.4
 schema:
   file: ./schema.graphql
 dataSources:
@@ -26,8 +26,6 @@ dataSources:
         - event: LandCreated(address,uint256,address,address)
           handler: handleLandCreated
       file: ./src/mapping.ts
-
-
 templates:
   - kind: ethereum/contract
     name: Utopia
@@ -42,8 +40,6 @@ templates:
       entities:
         - Utopia
         - Land
-        # - Particle
-        # - IpfsData
       abis:
         - name: Utopia
           file: ./abis/Utopia.json
@@ -54,7 +50,6 @@ templates:
           handler: handleBurn
         - event: LandUpdate(uint256,string)
           handler: handleLandUpdate
-
   - kind: ethereum/contract
     name: UtopiaNFT
     network: rinkeby

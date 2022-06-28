@@ -1,18 +1,13 @@
-import { IpfsData, Land, Particle, Utopia, Factory, ERC721Contract } from "../generated/schema";
+import { Factory, IpfsData, Land, Particle, Utopia } from "../generated/schema";
 import { Address, BigInt, Bytes, ipfs, json, JSONValue, log, store, TypedMap, } from "@graphprotocol/graph-ts";
 import { Assign, Burn, LandUpdate, } from "../generated/templates/Utopia/Utopia";
-// import { Transfer } from "../generated/templates/UtopiaNFT/UtopiaNFT";
 import { LandCreated } from "../generated/UtopiaFactory/UtopiaFactory";
-import { Utopia as UtopiaCreator } from '../generated/templates'
-import { UtopiaNFT as UtopiaNFTCreator } from '../generated/templates'
+import { Utopia as UtopiaCreator, UtopiaNFT as UtopiaNFTCreator } from '../generated/templates'
 import { fetchERC721 } from "../fetch/erc721";
 import { fetchAccount } from "../fetch/account";
 
-const contractMappings = new TypedMap<string, Address>();
-contractMappings.set("0x6dcd83daaf43560e8692c58bf02f36d647c32716",
-    Address.fromBytes(Bytes.fromHexString("0xf4315D6Ab7B18A5903d22f9dc17358C7bBA85b8F")));
-
-export function handleLandCreated(event: LandCreated): void {
+export function handleLandCreated(event: LandCreated): void
+{
     const utopiaId = event.params.landAddress
     let factory = Factory.load(utopiaId.toHex())
     if (!factory) {
@@ -266,7 +261,6 @@ function calculateLandId(contract: Address, landId: BigInt): Bytes
 {
     return contract.concat(Bytes.fromByteArray(Bytes.fromBigInt(landId)));
 }
-
 
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";

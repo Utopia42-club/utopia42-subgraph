@@ -4,8 +4,10 @@
     "codegen": "graph codegen",
     "build matic": "graph build --network matic",
     "build mumbai": "graph build --network mumbai",
+    "build rinkeby": "graph build --network rinkeby",
     "deploy matic": "graph deploy --network matic --product hosted-service utopia42-club/utopia42",
-    "deploy mumbai": "graph deploy --network mumbai --product hosted-service utopia42-club/utopia42-mumbai"
+    "deploy mumbai": "graph deploy --network mumbai --product hosted-service utopia42-club/utopia42-mumbai",
+    "deploy rinkeby": "graph deploy --network rinkeby --product hosted-service utopia42-club/utopia42"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.30.4",

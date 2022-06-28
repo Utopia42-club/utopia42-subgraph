@@ -1,22 +1,8 @@
 {
-  "matic": {
-    "Utopia": {
-      "address": "0xf4315D6Ab7B18A5903d22f9dc17358C7bBA85b8F",
-      "startBlock": 22836768
-    },
-    "UtopiaNFT": {
-      "address": "0x6dcd83daaf43560e8692c58bf02f36d647c32716",
-      "startBlock": 22804205
-    }
-  },
-  "mumbai": {
-    "Utopia": {
-      "address": "0xDfDDbd9d7Cfc48Ab8b4BbA8ec7E00A7B098544f4",
-      "startBlock": 26419498
-    },
-    "UtopiaNFT": {
-      "address": "0x26d6659A027fc815C61Dc2410c4d2e124b7a3141",
-      "startBlock": 26475204
+  "rinkeby": {
+    "UtopiaFactory": {
+      "address": "0x85E92443E61760A28F8Ad90A5D478D015896b556",
+      "startBlock": 10914903
     }
   }
 }
