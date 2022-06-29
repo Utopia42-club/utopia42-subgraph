@@ -50,9 +50,9 @@ export function handleAssign(event: Assign): void
     }
 
     const landId = event.params.landId;
-    // const id = calculateLandId(contract, landId);
+    const id = calculateLandId(contract, landId);
 
-    if (Land.load(landId.toString()) !== null) {
+    if (Land.load(id.toHex()) !== null) {
         log.warning("Land {} on contract {} already exists. (Tx {})",
             [landId.toString(), contract.toHexString(), transactionHash]);
         return;
@@ -64,25 +64,19 @@ export function handleAssign(event: Assign): void
         log.warning(`Assign event ignored since the ipfs key already exists. (Tx {})`, [transactionHash]);
         return;
     }
-    let land = Land.load(landId.toString())
-    if (!land) {
-        land = new Land(landId.toString());
-        land.contract = contract.toHex();
-        land.landId = landId;
-        land.owner = event.params.owner;
-        land.x1 = event.params.x1;
-        land.x2 = event.params.x2;
-        land.y1 = event.params.y1;
-        land.y2 = event.params.y2;
-        land.create_time = event.block.timestamp;
-        land.update_time = event.block.timestamp;
-        land.isNFT = false;
-        land.save();
-    } else {
-        log.warning("Land {} is Note save)",
-            [landId.toString()]);
-        return;
-    }
+    let land = Land.load(id.toHex())
+    land = new Land(id.toHex());
+    land.contract = contract.toHex();
+    land.landId = landId;
+    land.owner = event.params.owner;
+    land.x1 = event.params.x1;
+    land.x2 = event.params.x2;
+    land.y1 = event.params.y1;
+    land.y2 = event.params.y2;
+    land.create_time = event.block.timestamp;
+    land.update_time = event.block.timestamp;
+    land.isNFT = false;
+    land.save();
 
 
     // let ipfsData: IpfsData | null = null;
@@ -92,7 +86,7 @@ export function handleAssign(event: Assign): void
     //     land.ipfsData = ipfsKey;
     // }
 
-    land.save();
+    // land.save();
 
     // if (ipfsData !== null)
     //     loadIpfsData(contract, ipfsData);
