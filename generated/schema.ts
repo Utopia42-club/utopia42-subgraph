@@ -194,6 +194,15 @@ export class Utopia extends Entity {
   set lands(value: Array<string>) {
     this.set("lands", Value.fromStringArray(value));
   }
+
+  get burnedLand(): Array<string> {
+    let value = this.get("burnedLand");
+    return value!.toStringArray();
+  }
+
+  set burnedLand(value: Array<string>) {
+    this.set("burnedLand", Value.fromStringArray(value));
+  }
 }
 
 export class Land extends Entity {
@@ -354,6 +363,7 @@ export class BurnedLand extends Entity {
     this.set("contract", Value.fromBytes(Bytes.empty()));
     this.set("landId", Value.fromBigInt(BigInt.zero()));
     this.set("time", Value.fromBigInt(BigInt.zero()));
+    this.set("utopia", Value.fromString(""));
   }
 
   save(): void {
@@ -407,6 +417,15 @@ export class BurnedLand extends Entity {
 
   set time(value: BigInt) {
     this.set("time", Value.fromBigInt(value));
+  }
+
+  get utopia(): string {
+    let value = this.get("utopia");
+    return value!.toString();
+  }
+
+  set utopia(value: string) {
+    this.set("utopia", Value.fromString(value));
   }
 }
 

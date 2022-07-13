@@ -1,4 +1,4 @@
-import { Factory, IpfsData, Land, Particle, Utopia } from "../generated/schema";
+import { Factory, IpfsData, Land, Particle, Utopia, BurnedLand } from "../generated/schema";
 import { Address, BigInt, Bytes, ipfs, json, JSONValue, log, store, TypedMap, } from "@graphprotocol/graph-ts";
 import { Assign, Burn, LandUpdate, } from "../generated/templates/Utopia/Utopia";
 import { VerseCreated } from "../generated/UtopiaFactory/UtopiaFactory";
@@ -251,6 +251,13 @@ export function handleBurn(event: Burn): void
     }
 
     store.remove('Land', id.toHexString()); // https://github.com/graphprotocol/docs/issues/115
+    let time = event.block.timestamp;
+    let burnedLand = new BurnedLand(id.toHex());
+    burnedLand.contract = contract;
+    burnedLand.landId = landId;
+    burnedLand.time = time;
+    burnedLand.utopia = contract.toHex();
+    burnedLand.save();
 }
 
 function calculateLandId(contract: Address, landId: BigInt): Bytes

@@ -16,6 +16,7 @@ type Utopia @entity{
     owner: Bytes!
     utopia: Factory!
     lands:[Land!]! @derivedFrom(field: "contract")
+    burnedLand:[BurnedLand!]! @derivedFrom(field: "utopia")
 }
 
 type Land @entity {
@@ -38,6 +39,7 @@ type BurnedLand @entity {
     contract: Bytes!
     landId: BigInt!
     time: BigInt!
+	utopia: Utopia!
 }
 
 type Particle @entity {
@@ -54,7 +56,7 @@ type Particle @entity {
 
 type IpfsData @entity {
     id: ID!
-    loaded: Boolean!
+    loaded: Boolean
     particles: [Particle!]! @derivedFrom(field: "ipfsData")
 }
 
