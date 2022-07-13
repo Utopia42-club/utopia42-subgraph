@@ -4,17 +4,17 @@ schema:
 dataSources:
   - kind: ethereum
     name: UtopiaFactory
-    network: rinkeby
+    network: mumbai
     source:
-      address: "0x85E92443E61760A28F8Ad90A5D478D015896b556"
+      address: "0xBFC07f06D05FfeF1735dB08ef43c811bcAF61bbA"
       abi: UtopiaFactory
-      startBlock: 10914903
+      startBlock: 27060083
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
-        - LandCreated
+        - VerseCreated
       abis:
         - name: UtopiaFactory
           file: ./abis/UtopiaFactory.json
@@ -23,13 +23,13 @@ dataSources:
         - name: UtopiaNFT
           file: ./abis/UtopiaNFT.json
       eventHandlers:
-        - event: LandCreated(address,uint256,address,address)
-          handler: handleLandCreated
+        - event: VerseCreated(address,address,uint256,address,address)
+          handler: handleVerseCreated
       file: ./src/mapping.ts
 templates:
   - kind: ethereum/contract
     name: Utopia
-    network: rinkeby
+    network: mumbai
     source:
       abi: Utopia
     mapping:
@@ -52,7 +52,7 @@ templates:
           handler: handleLandUpdate
   - kind: ethereum/contract
     name: UtopiaNFT
-    network: rinkeby
+    network: mumbai
     source:
       abi: UtopiaNFT
     mapping:

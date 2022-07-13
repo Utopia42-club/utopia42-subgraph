@@ -6,6 +6,7 @@ type Factory @entity{
     utopiaAddress: Bytes!
     collectionAddress: Bytes!
     owner: Account!
+	creator: Account!
     createdAt: BigInt!
     blockNumber: BigInt!
 }

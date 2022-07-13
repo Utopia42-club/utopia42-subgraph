@@ -20,6 +20,7 @@ export class Factory extends Entity {
     this.set("utopiaAddress", Value.fromBytes(Bytes.empty()));
     this.set("collectionAddress", Value.fromBytes(Bytes.empty()));
     this.set("owner", Value.fromString(""));
+    this.set("creator", Value.fromString(""));
     this.set("createdAt", Value.fromBigInt(BigInt.zero()));
     this.set("blockNumber", Value.fromBigInt(BigInt.zero()));
   }
@@ -102,6 +103,15 @@ export class Factory extends Entity {
 
   set owner(value: string) {
     this.set("owner", Value.fromString(value));
+  }
+
+  get creator(): string {
+    let value = this.get("creator");
+    return value!.toString();
+  }
+
+  set creator(value: string) {
+    this.set("creator", Value.fromString(value));
   }
 
   get createdAt(): BigInt {

@@ -1,22 +1,24 @@
 import { Factory, IpfsData, Land, Particle, Utopia } from "../generated/schema";
 import { Address, BigInt, Bytes, ipfs, json, JSONValue, log, store, TypedMap, } from "@graphprotocol/graph-ts";
 import { Assign, Burn, LandUpdate, } from "../generated/templates/Utopia/Utopia";
-import { LandCreated } from "../generated/UtopiaFactory/UtopiaFactory";
+import { VerseCreated } from "../generated/UtopiaFactory/UtopiaFactory";
 import { Utopia as UtopiaCreator, UtopiaNFT as UtopiaNFTCreator } from '../generated/templates'
 import { fetchERC721 } from "../fetch/erc721";
 import { fetchAccount } from "../fetch/account";
 
-export function handleLandCreated(event: LandCreated): void
+export function handleVerseCreated(event: VerseCreated): void
 {
-    const utopiaId = event.params.landAddress
+    const utopiaId = event.params.verseAddress
     let factory = Factory.load(utopiaId.toHex())
     if (!factory) {
         let owner = fetchAccount(event.params.owner)
+        let creator = fetchAccount(event.params.owner)
         factory = new Factory(utopiaId.toHex())
         factory.factory = event.address
-        factory.utopiaAddress = event.params.landAddress
+        factory.utopiaAddress = event.params.verseAddress
         factory.collectionAddress = event.params.collectionAddress
         factory.owner = owner.id
+        factory.creator = creator.id
         factory.createdAt = event.params.time
         factory.blockNumber = event.block.number
 
@@ -30,7 +32,7 @@ export function handleLandCreated(event: LandCreated): void
         }
 
 
-        UtopiaCreator.create(event.params.landAddress)
+        UtopiaCreator.create(event.params.verseAddress)
         UtopiaNFTCreator.create(event.params.collectionAddress)
         utopia.save()
         factory.save()

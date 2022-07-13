@@ -10,16 +10,94 @@ import {
   BigInt
 } from "@graphprotocol/graph-ts";
 
-export class LandCreated extends ethereum.Event {
-  get params(): LandCreated__Params {
-    return new LandCreated__Params(this);
+export class RoleAdminChanged extends ethereum.Event {
+  get params(): RoleAdminChanged__Params {
+    return new RoleAdminChanged__Params(this);
   }
 }
 
-export class LandCreated__Params {
-  _event: LandCreated;
+export class RoleAdminChanged__Params {
+  _event: RoleAdminChanged;
 
-  constructor(event: LandCreated) {
+  constructor(event: RoleAdminChanged) {
+    this._event = event;
+  }
+
+  get role(): Bytes {
+    return this._event.parameters[0].value.toBytes();
+  }
+
+  get previousAdminRole(): Bytes {
+    return this._event.parameters[1].value.toBytes();
+  }
+
+  get newAdminRole(): Bytes {
+    return this._event.parameters[2].value.toBytes();
+  }
+}
+
+export class RoleGranted extends ethereum.Event {
+  get params(): RoleGranted__Params {
+    return new RoleGranted__Params(this);
+  }
+}
+
+export class RoleGranted__Params {
+  _event: RoleGranted;
+
+  constructor(event: RoleGranted) {
+    this._event = event;
+  }
+
+  get role(): Bytes {
+    return this._event.parameters[0].value.toBytes();
+  }
+
+  get account(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get sender(): Address {
+    return this._event.parameters[2].value.toAddress();
+  }
+}
+
+export class RoleRevoked extends ethereum.Event {
+  get params(): RoleRevoked__Params {
+    return new RoleRevoked__Params(this);
+  }
+}
+
+export class RoleRevoked__Params {
+  _event: RoleRevoked;
+
+  constructor(event: RoleRevoked) {
+    this._event = event;
+  }
+
+  get role(): Bytes {
+    return this._event.parameters[0].value.toBytes();
+  }
+
+  get account(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get sender(): Address {
+    return this._event.parameters[2].value.toAddress();
+  }
+}
+
+export class VerseCreated extends ethereum.Event {
+  get params(): VerseCreated__Params {
+    return new VerseCreated__Params(this);
+  }
+}
+
+export class VerseCreated__Params {
+  _event: VerseCreated;
+
+  constructor(event: VerseCreated) {
     this._event = event;
   }
 
@@ -27,33 +105,20 @@ export class LandCreated__Params {
     return this._event.parameters[0].value.toAddress();
   }
 
-  get time(): BigInt {
-    return this._event.parameters[1].value.toBigInt();
+  get creator(): Address {
+    return this._event.parameters[1].value.toAddress();
   }
 
-  get landAddress(): Address {
-    return this._event.parameters[2].value.toAddress();
+  get time(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+
+  get verseAddress(): Address {
+    return this._event.parameters[3].value.toAddress();
   }
 
   get collectionAddress(): Address {
-    return this._event.parameters[3].value.toAddress();
-  }
-}
-
-export class UtopiaFactory__createLandResult {
-  value0: Address;
-  value1: Address;
-
-  constructor(value0: Address, value1: Address) {
-    this.value0 = value0;
-    this.value1 = value1;
-  }
-
-  toMap(): TypedMap<string, ethereum.Value> {
-    let map = new TypedMap<string, ethereum.Value>();
-    map.set("value0", ethereum.Value.fromAddress(this.value0));
-    map.set("value1", ethereum.Value.fromAddress(this.value1));
-    return map;
+    return this._event.parameters[4].value.toAddress();
   }
 }
 
@@ -62,94 +127,298 @@ export class UtopiaFactory extends ethereum.SmartContract {
     return new UtopiaFactory("UtopiaFactory", address);
   }
 
-  collections(param0: Address): Address {
-    let result = super.call("collections", "collections(address):(address)", [
-      ethereum.Value.fromAddress(param0)
-    ]);
+  ADMIN_ROLE(): Bytes {
+    let result = super.call("ADMIN_ROLE", "ADMIN_ROLE():(bytes32)", []);
 
-    return result[0].toAddress();
+    return result[0].toBytes();
   }
 
-  try_collections(param0: Address): ethereum.CallResult<Address> {
-    let result = super.tryCall(
-      "collections",
-      "collections(address):(address)",
-      [ethereum.Value.fromAddress(param0)]
-    );
+  try_ADMIN_ROLE(): ethereum.CallResult<Bytes> {
+    let result = super.tryCall("ADMIN_ROLE", "ADMIN_ROLE():(bytes32)", []);
     if (result.reverted) {
       return new ethereum.CallResult();
     }
     let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toAddress());
+    return ethereum.CallResult.fromValue(value[0].toBytes());
   }
 
-  createLand(_owner: Address): UtopiaFactory__createLandResult {
+  DEFAULT_ADMIN_ROLE(): Bytes {
     let result = super.call(
-      "createLand",
-      "createLand(address):(address,address)",
-      [ethereum.Value.fromAddress(_owner)]
+      "DEFAULT_ADMIN_ROLE",
+      "DEFAULT_ADMIN_ROLE():(bytes32)",
+      []
     );
 
-    return new UtopiaFactory__createLandResult(
-      result[0].toAddress(),
-      result[1].toAddress()
-    );
+    return result[0].toBytes();
   }
 
-  try_createLand(
-    _owner: Address
-  ): ethereum.CallResult<UtopiaFactory__createLandResult> {
+  try_DEFAULT_ADMIN_ROLE(): ethereum.CallResult<Bytes> {
     let result = super.tryCall(
-      "createLand",
-      "createLand(address):(address,address)",
-      [ethereum.Value.fromAddress(_owner)]
+      "DEFAULT_ADMIN_ROLE",
+      "DEFAULT_ADMIN_ROLE():(bytes32)",
+      []
     );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
     let value = result.value;
-    return ethereum.CallResult.fromValue(
-      new UtopiaFactory__createLandResult(
-        value[0].toAddress(),
-        value[1].toAddress()
-      )
-    );
+    return ethereum.CallResult.fromValue(value[0].toBytes());
   }
 
-  lands(param0: Address): Address {
-    let result = super.call("lands", "lands(address):(address)", [
-      ethereum.Value.fromAddress(param0)
-    ]);
+  collectionFactory(): Address {
+    let result = super.call(
+      "collectionFactory",
+      "collectionFactory():(address)",
+      []
+    );
 
     return result[0].toAddress();
   }
 
-  try_lands(param0: Address): ethereum.CallResult<Address> {
-    let result = super.tryCall("lands", "lands(address):(address)", [
-      ethereum.Value.fromAddress(param0)
-    ]);
+  try_collectionFactory(): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "collectionFactory",
+      "collectionFactory():(address)",
+      []
+    );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
-}
 
-export class CreateLandCall extends ethereum.Call {
-  get inputs(): CreateLandCall__Inputs {
-    return new CreateLandCall__Inputs(this);
+  getRoleAdmin(role: Bytes): Bytes {
+    let result = super.call("getRoleAdmin", "getRoleAdmin(bytes32):(bytes32)", [
+      ethereum.Value.fromFixedBytes(role)
+    ]);
+
+    return result[0].toBytes();
   }
 
-  get outputs(): CreateLandCall__Outputs {
-    return new CreateLandCall__Outputs(this);
+  try_getRoleAdmin(role: Bytes): ethereum.CallResult<Bytes> {
+    let result = super.tryCall(
+      "getRoleAdmin",
+      "getRoleAdmin(bytes32):(bytes32)",
+      [ethereum.Value.fromFixedBytes(role)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBytes());
+  }
+
+  hasRole(role: Bytes, account: Address): boolean {
+    let result = super.call("hasRole", "hasRole(bytes32,address):(bool)", [
+      ethereum.Value.fromFixedBytes(role),
+      ethereum.Value.fromAddress(account)
+    ]);
+
+    return result[0].toBoolean();
+  }
+
+  try_hasRole(role: Bytes, account: Address): ethereum.CallResult<boolean> {
+    let result = super.tryCall("hasRole", "hasRole(bytes32,address):(bool)", [
+      ethereum.Value.fromFixedBytes(role),
+      ethereum.Value.fromAddress(account)
+    ]);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
+  }
+
+  supportsInterface(interfaceId: Bytes): boolean {
+    let result = super.call(
+      "supportsInterface",
+      "supportsInterface(bytes4):(bool)",
+      [ethereum.Value.fromFixedBytes(interfaceId)]
+    );
+
+    return result[0].toBoolean();
+  }
+
+  try_supportsInterface(interfaceId: Bytes): ethereum.CallResult<boolean> {
+    let result = super.tryCall(
+      "supportsInterface",
+      "supportsInterface(bytes4):(bool)",
+      [ethereum.Value.fromFixedBytes(interfaceId)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
+  }
+
+  verseCreationFee(): BigInt {
+    let result = super.call(
+      "verseCreationFee",
+      "verseCreationFee():(uint256)",
+      []
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_verseCreationFee(): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "verseCreationFee",
+      "verseCreationFee():(uint256)",
+      []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 }
 
-export class CreateLandCall__Inputs {
-  _call: CreateLandCall;
+export class ConstructorCall extends ethereum.Call {
+  get inputs(): ConstructorCall__Inputs {
+    return new ConstructorCall__Inputs(this);
+  }
 
-  constructor(call: CreateLandCall) {
+  get outputs(): ConstructorCall__Outputs {
+    return new ConstructorCall__Outputs(this);
+  }
+}
+
+export class ConstructorCall__Inputs {
+  _call: ConstructorCall;
+
+  constructor(call: ConstructorCall) {
+    this._call = call;
+  }
+}
+
+export class ConstructorCall__Outputs {
+  _call: ConstructorCall;
+
+  constructor(call: ConstructorCall) {
+    this._call = call;
+  }
+}
+
+export class GrantRoleCall extends ethereum.Call {
+  get inputs(): GrantRoleCall__Inputs {
+    return new GrantRoleCall__Inputs(this);
+  }
+
+  get outputs(): GrantRoleCall__Outputs {
+    return new GrantRoleCall__Outputs(this);
+  }
+}
+
+export class GrantRoleCall__Inputs {
+  _call: GrantRoleCall;
+
+  constructor(call: GrantRoleCall) {
+    this._call = call;
+  }
+
+  get role(): Bytes {
+    return this._call.inputValues[0].value.toBytes();
+  }
+
+  get account(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+}
+
+export class GrantRoleCall__Outputs {
+  _call: GrantRoleCall;
+
+  constructor(call: GrantRoleCall) {
+    this._call = call;
+  }
+}
+
+export class RenounceRoleCall extends ethereum.Call {
+  get inputs(): RenounceRoleCall__Inputs {
+    return new RenounceRoleCall__Inputs(this);
+  }
+
+  get outputs(): RenounceRoleCall__Outputs {
+    return new RenounceRoleCall__Outputs(this);
+  }
+}
+
+export class RenounceRoleCall__Inputs {
+  _call: RenounceRoleCall;
+
+  constructor(call: RenounceRoleCall) {
+    this._call = call;
+  }
+
+  get role(): Bytes {
+    return this._call.inputValues[0].value.toBytes();
+  }
+
+  get account(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+}
+
+export class RenounceRoleCall__Outputs {
+  _call: RenounceRoleCall;
+
+  constructor(call: RenounceRoleCall) {
+    this._call = call;
+  }
+}
+
+export class RevokeRoleCall extends ethereum.Call {
+  get inputs(): RevokeRoleCall__Inputs {
+    return new RevokeRoleCall__Inputs(this);
+  }
+
+  get outputs(): RevokeRoleCall__Outputs {
+    return new RevokeRoleCall__Outputs(this);
+  }
+}
+
+export class RevokeRoleCall__Inputs {
+  _call: RevokeRoleCall;
+
+  constructor(call: RevokeRoleCall) {
+    this._call = call;
+  }
+
+  get role(): Bytes {
+    return this._call.inputValues[0].value.toBytes();
+  }
+
+  get account(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+}
+
+export class RevokeRoleCall__Outputs {
+  _call: RevokeRoleCall;
+
+  constructor(call: RevokeRoleCall) {
+    this._call = call;
+  }
+}
+
+export class CreateVerseCall extends ethereum.Call {
+  get inputs(): CreateVerseCall__Inputs {
+    return new CreateVerseCall__Inputs(this);
+  }
+
+  get outputs(): CreateVerseCall__Outputs {
+    return new CreateVerseCall__Outputs(this);
+  }
+}
+
+export class CreateVerseCall__Inputs {
+  _call: CreateVerseCall;
+
+  constructor(call: CreateVerseCall) {
     this._call = call;
   }
 
@@ -158,18 +427,74 @@ export class CreateLandCall__Inputs {
   }
 }
 
-export class CreateLandCall__Outputs {
-  _call: CreateLandCall;
+export class CreateVerseCall__Outputs {
+  _call: CreateVerseCall;
 
-  constructor(call: CreateLandCall) {
+  constructor(call: CreateVerseCall) {
     this._call = call;
   }
 
-  get land(): Address {
+  get verse(): Address {
     return this._call.outputValues[0].value.toAddress();
   }
+}
 
-  get collection(): Address {
-    return this._call.outputValues[1].value.toAddress();
+export class SetVerseCreationFeeCall extends ethereum.Call {
+  get inputs(): SetVerseCreationFeeCall__Inputs {
+    return new SetVerseCreationFeeCall__Inputs(this);
+  }
+
+  get outputs(): SetVerseCreationFeeCall__Outputs {
+    return new SetVerseCreationFeeCall__Outputs(this);
+  }
+}
+
+export class SetVerseCreationFeeCall__Inputs {
+  _call: SetVerseCreationFeeCall;
+
+  constructor(call: SetVerseCreationFeeCall) {
+    this._call = call;
+  }
+
+  get _fee(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+}
+
+export class SetVerseCreationFeeCall__Outputs {
+  _call: SetVerseCreationFeeCall;
+
+  constructor(call: SetVerseCreationFeeCall) {
+    this._call = call;
+  }
+}
+
+export class SetCollectionFactoryAddressCall extends ethereum.Call {
+  get inputs(): SetCollectionFactoryAddressCall__Inputs {
+    return new SetCollectionFactoryAddressCall__Inputs(this);
+  }
+
+  get outputs(): SetCollectionFactoryAddressCall__Outputs {
+    return new SetCollectionFactoryAddressCall__Outputs(this);
+  }
+}
+
+export class SetCollectionFactoryAddressCall__Inputs {
+  _call: SetCollectionFactoryAddressCall;
+
+  constructor(call: SetCollectionFactoryAddressCall) {
+    this._call = call;
+  }
+
+  get _newAddress(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class SetCollectionFactoryAddressCall__Outputs {
+  _call: SetCollectionFactoryAddressCall;
+
+  constructor(call: SetCollectionFactoryAddressCall) {
+    this._call = call;
   }
 }
