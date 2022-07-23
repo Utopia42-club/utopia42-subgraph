@@ -122,9 +122,9 @@ export class VerseCreated__Params {
   }
 }
 
-export class UtopiaFactory extends ethereum.SmartContract {
-  static bind(address: Address): UtopiaFactory {
-    return new UtopiaFactory("UtopiaFactory", address);
+export class Utopia42VerseFactory extends ethereum.SmartContract {
+  static bind(address: Address): Utopia42VerseFactory {
+    return new Utopia42VerseFactory("Utopia42VerseFactory", address);
   }
 
   ADMIN_ROLE(): Bytes {
@@ -188,6 +188,29 @@ export class UtopiaFactory extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
+  controllerAddress(): Address {
+    let result = super.call(
+      "controllerAddress",
+      "controllerAddress():(address)",
+      []
+    );
+
+    return result[0].toAddress();
+  }
+
+  try_controllerAddress(): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "controllerAddress",
+      "controllerAddress():(address)",
+      []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
   getRoleAdmin(role: Bytes): Bytes {
     let result = super.call("getRoleAdmin", "getRoleAdmin(bytes32):(bytes32)", [
       ethereum.Value.fromFixedBytes(role)
@@ -223,6 +246,21 @@ export class UtopiaFactory extends ethereum.SmartContract {
       ethereum.Value.fromFixedBytes(role),
       ethereum.Value.fromAddress(account)
     ]);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
+  }
+
+  isPublic(): boolean {
+    let result = super.call("isPublic", "isPublic():(bool)", []);
+
+    return result[0].toBoolean();
+  }
+
+  try_isPublic(): ethereum.CallResult<boolean> {
+    let result = super.tryCall("isPublic", "isPublic():(bool)", []);
     if (result.reverted) {
       return new ethereum.CallResult();
     }
@@ -292,6 +330,10 @@ export class ConstructorCall__Inputs {
 
   constructor(call: ConstructorCall) {
     this._call = call;
+  }
+
+  get _controller(): Address {
+    return this._call.inputValues[0].value.toAddress();
   }
 }
 
@@ -425,6 +467,14 @@ export class CreateVerseCall__Inputs {
   get _owner(): Address {
     return this._call.inputValues[0].value.toAddress();
   }
+
+  get verseName(): string {
+    return this._call.inputValues[1].value.toString();
+  }
+
+  get publicAssignEnabled(): boolean {
+    return this._call.inputValues[2].value.toBoolean();
+  }
 }
 
 export class CreateVerseCall__Outputs {
@@ -495,6 +545,66 @@ export class SetCollectionFactoryAddressCall__Outputs {
   _call: SetCollectionFactoryAddressCall;
 
   constructor(call: SetCollectionFactoryAddressCall) {
+    this._call = call;
+  }
+}
+
+export class SetControllerAddressCall extends ethereum.Call {
+  get inputs(): SetControllerAddressCall__Inputs {
+    return new SetControllerAddressCall__Inputs(this);
+  }
+
+  get outputs(): SetControllerAddressCall__Outputs {
+    return new SetControllerAddressCall__Outputs(this);
+  }
+}
+
+export class SetControllerAddressCall__Inputs {
+  _call: SetControllerAddressCall;
+
+  constructor(call: SetControllerAddressCall) {
+    this._call = call;
+  }
+
+  get _newAddress(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class SetControllerAddressCall__Outputs {
+  _call: SetControllerAddressCall;
+
+  constructor(call: SetControllerAddressCall) {
+    this._call = call;
+  }
+}
+
+export class SetIsPublicCall extends ethereum.Call {
+  get inputs(): SetIsPublicCall__Inputs {
+    return new SetIsPublicCall__Inputs(this);
+  }
+
+  get outputs(): SetIsPublicCall__Outputs {
+    return new SetIsPublicCall__Outputs(this);
+  }
+}
+
+export class SetIsPublicCall__Inputs {
+  _call: SetIsPublicCall;
+
+  constructor(call: SetIsPublicCall) {
+    this._call = call;
+  }
+
+  get _isPublic(): boolean {
+    return this._call.inputValues[0].value.toBoolean();
+  }
+}
+
+export class SetIsPublicCall__Outputs {
+  _call: SetIsPublicCall;
+
+  constructor(call: SetIsPublicCall) {
     this._call = call;
   }
 }

@@ -1,9 +1,9 @@
 type Factory @entity{
     id: ID!
     factory: Bytes!
-    utopia: [Utopia!]! @derivedFrom(field: "utopia")
+    verse: [Verse!]! @derivedFrom(field: "verse")
     collection: [ERC721Contract!]! @derivedFrom(field: "collection")
-    utopiaAddress: Bytes!
+    verseAddress: Bytes!
     collectionAddress: Bytes!
     owner: Account!
 	creator: Account!
@@ -11,17 +11,17 @@ type Factory @entity{
     blockNumber: BigInt!
 }
 
-type Utopia @entity{
+type Verse @entity{
     id: ID!
     owner: Bytes!
-    utopia: Factory!
+    verse: Factory!
     lands:[Land!]! @derivedFrom(field: "contract")
-    burnedLand:[BurnedLand!]! @derivedFrom(field: "utopia")
+    burnedLand:[BurnedLand!]! @derivedFrom(field: "verse")
 }
 
 type Land @entity {
     id: ID!
-    contract: Utopia!
+    contract: Verse!
     landId: BigInt!
     owner: Bytes!
     x1: BigInt!
@@ -39,7 +39,7 @@ type BurnedLand @entity {
     contract: Bytes!
     landId: BigInt!
     time: BigInt!
-	utopia: Utopia!
+	verse: Verse!
 }
 
 type Particle @entity {

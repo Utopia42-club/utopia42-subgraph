@@ -3,12 +3,12 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum
-    name: UtopiaFactory
+    name: Utopia42VerseFactory
     network: mumbai
     source:
-      address: "0xBFC07f06D05FfeF1735dB08ef43c811bcAF61bbA"
-      abi: UtopiaFactory
-      startBlock: 27060083
+      address: "0xD9f49309bd75DBeb5ff43c26e14EdD7f340bA256"
+      abi: Utopia42VerseFactory
+      startBlock: 27268087
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -16,10 +16,10 @@ dataSources:
       entities:
         - VerseCreated
       abis:
-        - name: UtopiaFactory
-          file: ./abis/UtopiaFactory.json
-        - name: Utopia
-          file: ./abis/Utopia.json
+        - name: Utopia42VerseFactory
+          file: ./abis/Utopia42VerseFactory.json
+        - name: Utopia42Verse
+          file: ./abis/Utopia42Verse.json
         - name: UtopiaNFT
           file: ./abis/UtopiaNFT.json
       eventHandlers:
@@ -28,21 +28,21 @@ dataSources:
       file: ./src/mapping.ts
 templates:
   - kind: ethereum/contract
-    name: Utopia
+    name: Utopia42Verse
     network: mumbai
     source:
-      abi: Utopia
+      abi: Utopia42Verse
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
       language: wasm/assemblyscript
       file: ./src/mapping.ts
       entities:
-        - Utopia
+        - Utopia42Verse
         - Land
       abis:
-        - name: Utopia
-          file: ./abis/Utopia.json
+        - name: Utopia42Verse
+          file: ./abis/Utopia42Verse.json
       eventHandlers:
         - event: Assign(uint256,int256,int256,int256,int256,address,string)
           handler: handleAssign

@@ -1,8 +1,8 @@
-import { Factory, IpfsData, Land, Particle, Utopia, BurnedLand } from "../generated/schema";
+import { Factory, IpfsData, Land, Particle, Verse, BurnedLand } from "../generated/schema";
 import { Address, BigInt, Bytes, ipfs, json, JSONValue, log, store, TypedMap, } from "@graphprotocol/graph-ts";
-import { Assign, Burn, LandUpdate, } from "../generated/templates/Utopia/Utopia";
-import { VerseCreated } from "../generated/UtopiaFactory/UtopiaFactory";
-import { Utopia as UtopiaCreator, UtopiaNFT as UtopiaNFTCreator } from '../generated/templates'
+import { Assign, Burn, LandUpdate, } from "../generated/templates/Utopia42Verse/Utopia42Verse";
+import { VerseCreated } from "../generated/Utopia42VerseFactory/Utopia42VerseFactory";
+import { Utopia42Verse as Utopia42VerseCreator, UtopiaNFT as UtopiaNFTCreator } from '../generated/templates'
 import { fetchERC721 } from "../fetch/erc721";
 import { fetchAccount } from "../fetch/account";
 
@@ -15,16 +15,16 @@ export function handleVerseCreated(event: VerseCreated): void
         let creator = fetchAccount(event.params.owner)
         factory = new Factory(utopiaId.toHex())
         factory.factory = event.address
-        factory.utopiaAddress = event.params.verseAddress
+        factory.verseAddress = event.params.verseAddress
         factory.collectionAddress = event.params.collectionAddress
         factory.owner = owner.id
         factory.creator = creator.id
         factory.createdAt = event.params.time
         factory.blockNumber = event.block.number
 
-        let utopia = new Utopia(utopiaId.toHex())
+        let utopia = new Verse(utopiaId.toHex())
         utopia.owner = event.params.owner
-        utopia.utopia = factory.id
+        utopia.verse = factory.id
         let utopiaNFT = fetchERC721(event.params.collectionAddress)
         if (utopiaNFT) {
             utopiaNFT.collection = factory.id
@@ -32,7 +32,7 @@ export function handleVerseCreated(event: VerseCreated): void
         }
 
 
-        UtopiaCreator.create(event.params.verseAddress)
+        Utopia42VerseCreator.create(event.params.verseAddress)
         UtopiaNFTCreator.create(event.params.collectionAddress)
         utopia.save()
         factory.save()
@@ -256,7 +256,7 @@ export function handleBurn(event: Burn): void
     burnedLand.contract = contract;
     burnedLand.landId = landId;
     burnedLand.time = time;
-    burnedLand.utopia = contract.toHex();
+    burnedLand.verse = contract.toHex();
     burnedLand.save();
 }
 

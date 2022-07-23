@@ -6,13 +6,17 @@ import {
   DataSourceContext
 } from "@graphprotocol/graph-ts";
 
-export class Utopia extends DataSourceTemplate {
+export class Utopia42Verse extends DataSourceTemplate {
   static create(address: Address): void {
-    DataSourceTemplate.create("Utopia", [address.toHex()]);
+    DataSourceTemplate.create("Utopia42Verse", [address.toHex()]);
   }
 
   static createWithContext(address: Address, context: DataSourceContext): void {
-    DataSourceTemplate.createWithContext("Utopia", [address.toHex()], context);
+    DataSourceTemplate.createWithContext(
+      "Utopia42Verse",
+      [address.toHex()],
+      context
+    );
   }
 }
 
