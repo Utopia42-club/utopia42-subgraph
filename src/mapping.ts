@@ -8,12 +8,12 @@ import { fetchAccount } from "../fetch/account";
 
 export function handleVerseCreated(event: VerseCreated): void
 {
-    const utopiaId = event.params.verseAddress
-    let factory = Factory.load(utopiaId.toHex())
+    const verseId = event.params.verseAddress
+    let factory = Factory.load(verseId.toHex())
     if (!factory) {
         let owner = fetchAccount(event.params.owner)
-        let creator = fetchAccount(event.params.owner)
-        factory = new Factory(utopiaId.toHex())
+        let creator = fetchAccount(event.params.creator)
+        factory = new Factory(verseId.toHex())
         factory.factory = event.address
         factory.verseAddress = event.params.verseAddress
         factory.collectionAddress = event.params.collectionAddress
@@ -22,9 +22,10 @@ export function handleVerseCreated(event: VerseCreated): void
         factory.createdAt = event.params.time
         factory.blockNumber = event.block.number
 
-        let utopia = new Verse(utopiaId.toHex())
-        utopia.owner = event.params.owner
-        utopia.verse = factory.id
+        let verse = new Verse(verseId.toHex())
+        verse.owner = event.params.owner
+        verse.creator = event.params.creator
+        verse.verse = factory.id
         let utopiaNFT = fetchERC721(event.params.collectionAddress)
         if (utopiaNFT) {
             utopiaNFT.collection = factory.id
@@ -34,7 +35,7 @@ export function handleVerseCreated(event: VerseCreated): void
 
         Utopia42VerseCreator.create(event.params.verseAddress)
         UtopiaNFTCreator.create(event.params.collectionAddress)
-        utopia.save()
+        verse.save()
         factory.save()
 
     }

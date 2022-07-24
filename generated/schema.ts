@@ -138,6 +138,7 @@ export class Verse extends Entity {
     this.set("id", Value.fromString(id));
 
     this.set("owner", Value.fromBytes(Bytes.empty()));
+    this.set("creator", Value.fromBytes(Bytes.empty()));
     this.set("verse", Value.fromString(""));
   }
 
@@ -173,6 +174,15 @@ export class Verse extends Entity {
 
   set owner(value: Bytes) {
     this.set("owner", Value.fromBytes(value));
+  }
+
+  get creator(): Bytes {
+    let value = this.get("creator");
+    return value!.toBytes();
+  }
+
+  set creator(value: Bytes) {
+    this.set("creator", Value.fromBytes(value));
   }
 
   get verse(): string {

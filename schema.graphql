@@ -14,6 +14,7 @@ type Factory @entity{
 type Verse @entity{
     id: ID!
     owner: Bytes!
+    creator: Bytes!
     verse: Factory!
     lands:[Land!]! @derivedFrom(field: "contract")
     burnedLand:[BurnedLand!]! @derivedFrom(field: "verse")
