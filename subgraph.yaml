@@ -6,9 +6,9 @@ dataSources:
     name: Utopia42VerseFactory
     network: mumbai
     source:
-      address: "0xD9f49309bd75DBeb5ff43c26e14EdD7f340bA256"
+      address: "0x3FADe2932Edbe46337d83b8aBD28ba7aB0a63652"
       abi: Utopia42VerseFactory
-      startBlock: 27268087
+      startBlock: 27309002
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
