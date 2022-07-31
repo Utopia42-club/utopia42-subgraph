@@ -38,16 +38,16 @@ export function fetchERC721(address: Address): ERC721Contract | null {
 
 	// Detect using ERC165
 	let detectionId      = address.concat(Bytes.fromHexString('80ac58cd')) // Address + ERC721
-	let detectionAccount = Account.load(detectionId.toString())
+	let detectionAccount = Account.load(detectionId.toHexString())
 
 	// On missing cache
 	if (detectionAccount == null) {
-		detectionAccount = new Account(detectionId.toString())
+		detectionAccount = new Account(detectionId.toHexString())
 		let introspection_01ffc9a7 = supportsInterface(erc721, '01ffc9a7') // ERC165
 		let introspection_80ac58cd = supportsInterface(erc721, '80ac58cd') // ERC721
 		let introspection_00000000 = supportsInterface(erc721, '00000000', false)
 		let isERC721               = introspection_01ffc9a7 && introspection_80ac58cd && introspection_00000000
-		detectionAccount.asERC721  = isERC721 ? address.toString() : null
+		detectionAccount.asERC721  = isERC721 ? address.toHexString() : null
 		detectionAccount.save()
 	}
 

@@ -57,7 +57,7 @@ export function handleAssign(event: Assign): void
 
     if (Land.load(id.toHex()) !== null) {
         log.warning("Land {} on contract {} already exists. (Tx {})",
-            [landId.toString(), contract.toHexString(), transactionHash]);
+            [landId.toHexString(), contract.toHexString(), transactionHash]);
         return;
     }
 
@@ -112,7 +112,7 @@ export function handleLandUpdate(event: LandUpdate): void
     const land = Land.load(id.toHex());
     if (land === null) {
         log.warning("LandUpdate event ignored since no land with id {} exists on contract {}. (Tx {})",
-            [landId.toString(), contract.toHexString(), transactionHash]);
+            [landId.toHexString(), contract.toHexString(), transactionHash]);
         return;
     }
 
@@ -247,7 +247,7 @@ export function handleBurn(event: Burn): void
     const land = Land.load(id.toHex());
     if (land === null) {
         log.warning("Burn event ignored since no land with id {} exists on contract {}. (Tx {})",
-            [landId.toString(), contract.toHexString(), transactionHash]);
+            [landId.toHexString(), contract.toHexString(), transactionHash]);
         return;
     }
 
