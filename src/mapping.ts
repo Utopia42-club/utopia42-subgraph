@@ -1,6 +1,6 @@
-import { Factory, IpfsData, Land, Particle, Verse, BurnedLand } from "../generated/schema";
+import { Factory, IpfsData, Land, Particle, Verse, BurnedLand, LandsTransfer } from "../generated/schema";
 import { Address, BigInt, Bytes, ipfs, json, JSONValue, log, store, TypedMap, } from "@graphprotocol/graph-ts";
-import { Assign, Burn, LandUpdate, } from "../generated/templates/Utopia42Verse/Utopia42Verse";
+import { Assign, Burn, LandUpdate, LandTransfer} from "../generated/templates/Utopia42Verse/Utopia42Verse";
 import { VerseCreated } from "../generated/Utopia42VerseFactory/Utopia42VerseFactory";
 import { Utopia42Verse as Utopia42VerseCreator, UtopiaNFT as UtopiaNFTCreator } from '../generated/templates'
 import { fetchERC721 } from "../fetch/erc721";
@@ -28,7 +28,7 @@ export function handleVerseCreated(event: VerseCreated): void
         verse.verse = factory.id
         let utopiaNFT = fetchERC721(event.params.collectionAddress)
         if (utopiaNFT) {
-            utopiaNFT.collection = factory.id
+            // utopiaNFT.collection = factory.id
             utopiaNFT.save()
         }
 
@@ -259,6 +259,33 @@ export function handleBurn(event: Burn): void
     burnedLand.time = time;
     burnedLand.verse = contract.toHex();
     burnedLand.save();
+}
+
+export function handleLandTransfer(event: LandTransfer): void
+{
+    const transactionHash = event.transaction.hash.toHexString()
+
+    const verseAddress = event.address
+    const landId = event.params.landId
+    const id = calculateLandId(verseAddress, landId)
+
+    const land = Land.load(id.toHex())
+    if (!land) {
+        log.warning("LandTransfer event ignored since no land with id {} exists on verse {}. (Tx {})",
+            [landId.toHexString(), verseAddress.toHexString(), transactionHash])
+        return;
+    }
+
+    let landTransfer = new LandsTransfer(
+        transactionHash
+    )
+    landTransfer.from = event.params.from
+    landTransfer.to = event.params.to
+    landTransfer.timestamp = event.block.timestamp
+    landTransfer.land = land.id
+    land.owner = event.params.to
+    land.save()
+    landTransfer.save();
 }
 
 function calculateLandId(contract: Address, landId: BigInt): Bytes

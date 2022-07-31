@@ -2,7 +2,7 @@ type Factory @entity{
     id: ID!
     factory: Bytes!
     verse: [Verse!]! @derivedFrom(field: "verse")
-    collection: [ERC721Contract!]! @derivedFrom(field: "collection")
+    # collection: [ERC721Contract!]! @derivedFrom(field: "collection")
     verseAddress: Bytes!
     collectionAddress: Bytes!
     owner: Account!
@@ -33,6 +33,15 @@ type Land @entity {
     update_time: BigInt!
     ipfsData: IpfsData
     isNFT: Boolean!
+	transfers:[LandsTransfer!]! @derivedFrom(field: "land")
+}
+
+type LandsTransfer @entity {
+	id: ID!
+	from: Bytes!
+	to: Bytes!
+	timestamp: BigInt!
+	land: Land!
 }
 
 type BurnedLand @entity {
@@ -77,7 +86,7 @@ type Account @entity {
 
 type ERC721Contract @entity {
 	id: ID!
-    collection: Factory!
+    # collection: Factory!
 	asAccount: Account!
 	supportsMetadata: Boolean
 	name: String

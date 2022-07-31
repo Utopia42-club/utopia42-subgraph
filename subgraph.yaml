@@ -11,7 +11,7 @@ dataSources:
       startBlock: 27309002
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
         - VerseCreated
@@ -34,7 +34,7 @@ templates:
       abi: Utopia42Verse
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mapping.ts
       entities:
@@ -50,6 +50,8 @@ templates:
           handler: handleBurn
         - event: LandUpdate(uint256,string)
           handler: handleLandUpdate
+        - event: LandTransfer(uint256,address,address)
+          handler: handleLandTransfer
   - kind: ethereum/contract
     name: UtopiaNFT
     network: mumbai
@@ -57,7 +59,7 @@ templates:
       abi: UtopiaNFT
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/erc721.ts
       entities:
