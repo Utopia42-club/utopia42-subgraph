@@ -1,44 +1,44 @@
 import { Factory, IpfsData, Land, Particle, Verse, BurnedLand, LandsTransfer } from "../generated/schema";
 import { Address, BigInt, Bytes, ipfs, json, JSONValue, log, store, TypedMap, } from "@graphprotocol/graph-ts";
-import { Assign, Burn, LandUpdate, LandTransfer} from "../generated/templates/Utopia42Verse/Utopia42Verse";
+import { Assign, Burn, LandUpdate, LandTransfer, Utopia42Verse} from "../generated/templates/Utopia42Verse/Utopia42Verse";
 import { VerseCreated } from "../generated/Utopia42VerseFactory/Utopia42VerseFactory";
 import { Utopia42Verse as Utopia42VerseCreator, UtopiaNFT as UtopiaNFTCreator } from '../generated/templates'
 import { fetchERC721 } from "../fetch/erc721";
 import { fetchAccount } from "../fetch/account";
+import { FACTORY_ADDRESS, getVerseName } from './helpers'
+import {
+	constants,
+} from '@amxx/graphprotocol-utils'
 
-export function handleVerseCreated(event: VerseCreated): void
-{
-    const verseId = event.params.verseAddress
-    let factory = Factory.load(verseId.toHex())
+export function handleVerseCreated(event: VerseCreated): void {
+    let factory = Factory.load(FACTORY_ADDRESS)
     if (!factory) {
-        let owner = fetchAccount(event.params.owner)
-        let creator = fetchAccount(event.params.creator)
-        factory = new Factory(verseId.toHex())
-        factory.factory = event.address
-        factory.verseAddress = event.params.verseAddress
-        factory.collectionAddress = event.params.collectionAddress
-        factory.owner = owner.id
-        factory.creator = creator.id
-        factory.createdAt = event.params.time
-        factory.blockNumber = event.block.number
-
-        let verse = new Verse(verseId.toHex())
-        verse.owner = event.params.owner
-        verse.creator = event.params.creator
-        verse.verse = factory.id
-        let utopiaNFT = fetchERC721(event.params.collectionAddress)
-        if (utopiaNFT) {
-            // utopiaNFT.collection = factory.id
-            utopiaNFT.save()
-        }
-
-
-        Utopia42VerseCreator.create(event.params.verseAddress)
-        UtopiaNFTCreator.create(event.params.collectionAddress)
-        verse.save()
-        factory.save()
-
+        factory = new Factory(FACTORY_ADDRESS)
+        factory.totalVerse = constants.BIGINT_ZERO
     }
+    factory.totalVerse = factory.totalVerse.plus(constants.BIGINT_ONE)
+
+    const verseId = event.params.verseAddress
+    let owner = fetchAccount(event.params.owner)
+    let creator = fetchAccount(event.params.creator)
+    let verse = Verse.load(verseId.toHex())
+    if (!verse) {
+        let verse = new Verse(verseId.toHex())
+        verse.owner = owner.id
+        verse.creator = creator.id
+        verse.createdAt = event.block.timestamp
+        verse.blockNumber = event.block.number
+        verse.name = getVerseName(verseId).toString()
+        let collection = fetchERC721(event.params.collectionAddress, verse)
+        if (collection) {
+            verse.collection = collection.id
+            verse.save()
+        }
+    }
+
+    Utopia42VerseCreator.create(event.params.verseAddress)
+    UtopiaNFTCreator.create(event.params.collectionAddress)
+    factory.save()
 }
 
 export function handleAssign(event: Assign): void
@@ -292,9 +292,6 @@ function calculateLandId(contract: Address, landId: BigInt): Bytes
 {
     return contract.concat(Bytes.fromByteArray(Bytes.fromBigInt(landId)));
 }
-
-
-const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 // export function handleNFTTransfer(event: Transfer): void
 // {

@@ -42,40 +42,45 @@ export class Factory extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get factory(): Bytes {
-    let value = this.get("factory");
-    return value!.toBytes();
+  get totalVerse(): BigInt {
+    let value = this.get("totalVerse");
+    return value!.toBigInt();
   }
 
-  set factory(value: Bytes) {
-    this.set("factory", Value.fromBytes(value));
+  set totalVerse(value: BigInt) {
+    this.set("totalVerse", Value.fromBigInt(value));
+  }
+}
+
+export class Verse extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
   }
 
-  get verse(): Array<string> {
-    let value = this.get("verse");
-    return value!.toStringArray();
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Verse entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type Verse must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("Verse", id.toString(), this);
+    }
   }
 
-  set verse(value: Array<string>) {
-    this.set("verse", Value.fromStringArray(value));
+  static load(id: string): Verse | null {
+    return changetype<Verse | null>(store.get("Verse", id));
   }
 
-  get verseAddress(): Bytes {
-    let value = this.get("verseAddress");
-    return value!.toBytes();
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
   }
 
-  set verseAddress(value: Bytes) {
-    this.set("verseAddress", Value.fromBytes(value));
-  }
-
-  get collectionAddress(): Bytes {
-    let value = this.get("collectionAddress");
-    return value!.toBytes();
-  }
-
-  set collectionAddress(value: Bytes) {
-    this.set("collectionAddress", Value.fromBytes(value));
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
   }
 
   get owner(): string {
@@ -113,64 +118,23 @@ export class Factory extends Entity {
   set blockNumber(value: BigInt) {
     this.set("blockNumber", Value.fromBigInt(value));
   }
-}
 
-export class Verse extends Entity {
-  constructor(id: string) {
-    super();
-    this.set("id", Value.fromString(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save Verse entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.STRING,
-        `Entities of type Verse must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set("Verse", id.toString(), this);
-    }
-  }
-
-  static load(id: string): Verse | null {
-    return changetype<Verse | null>(store.get("Verse", id));
-  }
-
-  get id(): string {
-    let value = this.get("id");
+  get name(): string {
+    let value = this.get("name");
     return value!.toString();
   }
 
-  set id(value: string) {
-    this.set("id", Value.fromString(value));
+  set name(value: string) {
+    this.set("name", Value.fromString(value));
   }
 
-  get owner(): Bytes {
-    let value = this.get("owner");
-    return value!.toBytes();
-  }
-
-  set owner(value: Bytes) {
-    this.set("owner", Value.fromBytes(value));
-  }
-
-  get creator(): Bytes {
-    let value = this.get("creator");
-    return value!.toBytes();
-  }
-
-  set creator(value: Bytes) {
-    this.set("creator", Value.fromBytes(value));
-  }
-
-  get verse(): string {
-    let value = this.get("verse");
+  get collection(): string {
+    let value = this.get("collection");
     return value!.toString();
   }
 
-  set verse(value: string) {
-    this.set("verse", Value.fromString(value));
+  set collection(value: string) {
+    this.set("collection", Value.fromString(value));
   }
 
   get lands(): Array<string> {
@@ -813,6 +777,15 @@ export class ERC721Contract extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
+  }
+
+  get verse(): string {
+    let value = this.get("verse");
+    return value!.toString();
+  }
+
+  set verse(value: string) {
+    this.set("verse", Value.fromString(value));
   }
 
   get asAccount(): string {

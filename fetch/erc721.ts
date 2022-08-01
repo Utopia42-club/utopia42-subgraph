@@ -27,7 +27,9 @@ import {
 	supportsInterface,
 } from './erc165'
 
-export function fetchERC721(address: Address): ERC721Contract | null {
+import { Verse } from "../generated/schema"
+
+export function fetchERC721(address: Address, verse: Verse | null = null): ERC721Contract | null {
 	let erc721   = UtopiaNFT.bind(address)
 
 	// Try load entry
@@ -52,8 +54,9 @@ export function fetchERC721(address: Address): ERC721Contract | null {
 	}
 
 	// If an ERC721, build entry
-	if (detectionAccount.asERC721) {
+	if (detectionAccount.asERC721 && verse) {
 		contract                  = new ERC721Contract(address.toHex())
+		contract.verse            = verse.id
 		let try_name              = erc721.try_name()
 		let try_symbol            = erc721.try_symbol()
 		contract.name             = try_name.reverted   ? '' : try_name.value

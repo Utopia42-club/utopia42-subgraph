@@ -3,7 +3,7 @@
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy-mumbai": "graph deploy --network mumbai --product hosted-service jafari-mi/utopia42-mumbai-v2"
+    "deploy-mumbai": "graph deploy --product hosted-service jafari-mi/utopia42-mumbai-v2"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.30.4",

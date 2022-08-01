@@ -1,21 +1,16 @@
 type Factory @entity{
     id: ID!
-    factory: Bytes!
-    verse: [Verse!]! @derivedFrom(field: "verse")
-    # collection: [ERC721Contract!]! @derivedFrom(field: "collection")
-    verseAddress: Bytes!
-    collectionAddress: Bytes!
-    owner: Account!
-	creator: Account!
-    createdAt: BigInt!
-    blockNumber: BigInt!
+	totalVerse: BigInt!
 }
 
 type Verse @entity{
     id: ID!
-    owner: Bytes!
-    creator: Bytes!
-    verse: Factory!
+    owner: Account!
+    creator: Account!
+	createdAt: BigInt!
+	blockNumber: BigInt!
+	name: String!
+	collection: ERC721Contract!
     lands:[Land!]! @derivedFrom(field: "contract")
     burnedLand:[BurnedLand!]! @derivedFrom(field: "verse")
 }
@@ -86,7 +81,7 @@ type Account @entity {
 
 type ERC721Contract @entity {
 	id: ID!
-    # collection: Factory!
+    verse: Verse!
 	asAccount: Account!
 	supportsMetadata: Boolean
 	name: String
