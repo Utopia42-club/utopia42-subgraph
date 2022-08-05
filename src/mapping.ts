@@ -63,12 +63,13 @@ export function handleAssign(event: Assign): void
 
     const ipfsKey = event.params.hash;
     const ipfsKeyAvailable = ipfsKey !== null && ipfsKey.length !== 0;
-    if (ipfsKeyAvailable && IpfsData.load(ipfsKey) !== null) {
-        log.warning(`Assign event ignored since the ipfs key already exists. (Tx {})`, [transactionHash]);
-        return;
+    const land = new Land(id.toHex());
+    if (ipfsKeyAvailable) {
+        if(IpfsData.load(ipfsKey) === null)
+            new IpfsData(ipfsKey).save();
+        land.ipfsData = ipfsKey;
     }
-    let land = Land.load(id.toHex())
-    land = new Land(id.toHex());
+    
     land.contract = contract.toHex();
     land.landId = landId;
     land.owner = event.params.owner;
