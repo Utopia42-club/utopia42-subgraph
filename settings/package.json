@@ -1,0 +1,14 @@
+{
+  "name": "utopia42-settings",
+  "license": "UNLICENSED",
+  "scripts": {
+    "codegen": "graph codegen",
+    "build": "graph build",
+    "deploy-mumbai": "graph deploy --node https://api.thegraph.com/deploy/ jafari-mi/utopia42-settings-mumbai"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "0.33.0",
+    "@graphprotocol/graph-ts": "0.27.0"
+  },
+  "devDependencies": { "matchstick-as": "0.5.0" }
+}

@@ -1,0 +1,27 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: Utopia42Settings
+    network: mumbai
+    source:
+      address: "0xa4c68917367Bcfbfc495752a47f7A86450DFB042"
+      abi: Utopia42Settings
+      startBlock: 27453801
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - RoleAdminChanged
+        - RoleGranted
+        - RoleRevoked
+        - SettingUpdated
+      abis:
+        - name: Utopia42Settings
+          file: ./abis/Utopia42Settings.json
+      eventHandlers:
+        - event: SettingUpdated(address,uint256,string[],string[])
+          handler: handleSettingUpdated
+      file: ./src/mapping.ts

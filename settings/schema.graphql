@@ -1,0 +1,8 @@
+type User @entity {
+  id: ID!
+  account: Bytes!
+  lastUpdate: BigInt!
+  tokenID: BigInt!
+  keys: [String!]!
+  values: [String!]!
+}
