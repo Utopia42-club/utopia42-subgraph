@@ -1,19 +1,18 @@
 import {
   SettingUpdated,
 } from "../generated/Utopia42Settings/Utopia42Settings"
-import { User } from "../generated/schema"
-import { createUserId } from "./utils"
+import { CitizenID } from "../generated/schema"
 import { log } from "@graphprotocol/graph-ts";
 
 export function handleSettingUpdated(event: SettingUpdated): void {
 
-  const id = createUserId(event.params.user, event.params.tokenId)
-  let user = User.load(id.toString())
+  const id = event.params.tokenId
+  let user = CitizenID.load(id.toString())
   let keys = event.params.keys
   let values = event.params.values
 
   if (!user) {
-    user = new User(id.toString())
+    user = new CitizenID(id.toString())
     user.keys = keys
     user.values = values
 
