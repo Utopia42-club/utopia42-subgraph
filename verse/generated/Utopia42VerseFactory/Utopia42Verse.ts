@@ -70,6 +70,24 @@ export class Burn__Params {
   }
 }
 
+export class LandToNFTSet extends ethereum.Event {
+  get params(): LandToNFTSet__Params {
+    return new LandToNFTSet__Params(this);
+  }
+}
+
+export class LandToNFTSet__Params {
+  _event: LandToNFTSet;
+
+  constructor(event: LandToNFTSet) {
+    this._event = event;
+  }
+
+  get landId(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+}
+
 export class LandTransfer extends ethereum.Event {
   get params(): LandTransfer__Params {
     return new LandTransfer__Params(this);
@@ -115,6 +133,24 @@ export class LandUpdate__Params {
 
   get hash(): string {
     return this._event.parameters[1].value.toString();
+  }
+}
+
+export class NFTToLandSet extends ethereum.Event {
+  get params(): NFTToLandSet__Params {
+    return new NFTToLandSet__Params(this);
+  }
+}
+
+export class NFTToLandSet__Params {
+  _event: NFTToLandSet;
+
+  constructor(event: NFTToLandSet) {
+    this._event = event;
+  }
+
+  get landId(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
   }
 }
 
@@ -193,90 +229,6 @@ export class RoleRevoked__Params {
 
   get sender(): Address {
     return this._event.parameters[2].value.toAddress();
-  }
-}
-
-export class Utopia42Verse__getLandsResult_landsStruct extends ethereum.Tuple {
-  get id(): BigInt {
-    return this[0].toBigInt();
-  }
-
-  get x1(): BigInt {
-    return this[1].toBigInt();
-  }
-
-  get x2(): BigInt {
-    return this[2].toBigInt();
-  }
-
-  get y1(): BigInt {
-    return this[3].toBigInt();
-  }
-
-  get y2(): BigInt {
-    return this[4].toBigInt();
-  }
-
-  get time(): BigInt {
-    return this[5].toBigInt();
-  }
-
-  get hash(): string {
-    return this[6].toString();
-  }
-
-  get isNFT(): boolean {
-    return this[7].toBoolean();
-  }
-
-  get owner(): Address {
-    return this[8].toAddress();
-  }
-
-  get ownerIndex(): BigInt {
-    return this[9].toBigInt();
-  }
-}
-
-export class Utopia42Verse__getLandsByIdsResult_landsStruct extends ethereum.Tuple {
-  get id(): BigInt {
-    return this[0].toBigInt();
-  }
-
-  get x1(): BigInt {
-    return this[1].toBigInt();
-  }
-
-  get x2(): BigInt {
-    return this[2].toBigInt();
-  }
-
-  get y1(): BigInt {
-    return this[3].toBigInt();
-  }
-
-  get y2(): BigInt {
-    return this[4].toBigInt();
-  }
-
-  get time(): BigInt {
-    return this[5].toBigInt();
-  }
-
-  get hash(): string {
-    return this[6].toString();
-  }
-
-  get isNFT(): boolean {
-    return this[7].toBoolean();
-  }
-
-  get owner(): Address {
-    return this[8].toAddress();
-  }
-
-  get ownerIndex(): BigInt {
-    return this[9].toBigInt();
   }
 }
 
@@ -369,6 +321,90 @@ export class Utopia42Verse__landsResult {
 
   getOwnerIndex(): BigInt {
     return this.value9;
+  }
+}
+
+export class Utopia42Verse__getLandsResult_landsStruct extends ethereum.Tuple {
+  get id(): BigInt {
+    return this[0].toBigInt();
+  }
+
+  get x1(): BigInt {
+    return this[1].toBigInt();
+  }
+
+  get x2(): BigInt {
+    return this[2].toBigInt();
+  }
+
+  get y1(): BigInt {
+    return this[3].toBigInt();
+  }
+
+  get y2(): BigInt {
+    return this[4].toBigInt();
+  }
+
+  get time(): BigInt {
+    return this[5].toBigInt();
+  }
+
+  get hash(): string {
+    return this[6].toString();
+  }
+
+  get isNFT(): boolean {
+    return this[7].toBoolean();
+  }
+
+  get owner(): Address {
+    return this[8].toAddress();
+  }
+
+  get ownerIndex(): BigInt {
+    return this[9].toBigInt();
+  }
+}
+
+export class Utopia42Verse__getLandsByIdsResult_landsStruct extends ethereum.Tuple {
+  get id(): BigInt {
+    return this[0].toBigInt();
+  }
+
+  get x1(): BigInt {
+    return this[1].toBigInt();
+  }
+
+  get x2(): BigInt {
+    return this[2].toBigInt();
+  }
+
+  get y1(): BigInt {
+    return this[3].toBigInt();
+  }
+
+  get y2(): BigInt {
+    return this[4].toBigInt();
+  }
+
+  get time(): BigInt {
+    return this[5].toBigInt();
+  }
+
+  get hash(): string {
+    return this[6].toString();
+  }
+
+  get isNFT(): boolean {
+    return this[7].toBoolean();
+  }
+
+  get owner(): Address {
+    return this[8].toAddress();
+  }
+
+  get ownerIndex(): BigInt {
+    return this[9].toBigInt();
   }
 }
 
@@ -522,25 +558,6 @@ export class Utopia42Verse extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBytes());
   }
 
-  abs(x: BigInt): BigInt {
-    let result = super.call("abs", "abs(int256):(uint256)", [
-      ethereum.Value.fromSignedBigInt(x)
-    ]);
-
-    return result[0].toBigInt();
-  }
-
-  try_abs(x: BigInt): ethereum.CallResult<BigInt> {
-    let result = super.tryCall("abs", "abs(int256):(uint256)", [
-      ethereum.Value.fromSignedBigInt(x)
-    ]);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
-
   assignLandWithoutSigEnabled(): boolean {
     let result = super.call(
       "assignLandWithoutSigEnabled",
@@ -587,66 +604,6 @@ export class Utopia42Verse extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
-  getLands(owner: Address): Array<Utopia42Verse__getLandsResult_landsStruct> {
-    let result = super.call(
-      "getLands",
-      "getLands(address):((uint256,int256,int256,int256,int256,uint256,string,bool,address,uint256)[])",
-      [ethereum.Value.fromAddress(owner)]
-    );
-
-    return result[0].toTupleArray<Utopia42Verse__getLandsResult_landsStruct>();
-  }
-
-  try_getLands(
-    owner: Address
-  ): ethereum.CallResult<Array<Utopia42Verse__getLandsResult_landsStruct>> {
-    let result = super.tryCall(
-      "getLands",
-      "getLands(address):((uint256,int256,int256,int256,int256,uint256,string,bool,address,uint256)[])",
-      [ethereum.Value.fromAddress(owner)]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(
-      value[0].toTupleArray<Utopia42Verse__getLandsResult_landsStruct>()
-    );
-  }
-
-  getLandsByIds(
-    ids: Array<BigInt>
-  ): Array<Utopia42Verse__getLandsByIdsResult_landsStruct> {
-    let result = super.call(
-      "getLandsByIds",
-      "getLandsByIds(uint256[]):((uint256,int256,int256,int256,int256,uint256,string,bool,address,uint256)[])",
-      [ethereum.Value.fromUnsignedBigIntArray(ids)]
-    );
-
-    return result[0].toTupleArray<
-      Utopia42Verse__getLandsByIdsResult_landsStruct
-    >();
-  }
-
-  try_getLandsByIds(
-    ids: Array<BigInt>
-  ): ethereum.CallResult<
-    Array<Utopia42Verse__getLandsByIdsResult_landsStruct>
-  > {
-    let result = super.tryCall(
-      "getLandsByIds",
-      "getLandsByIds(uint256[]):((uint256,int256,int256,int256,int256,uint256,string,bool,address,uint256)[])",
-      [ethereum.Value.fromUnsignedBigIntArray(ids)]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(
-      value[0].toTupleArray<Utopia42Verse__getLandsByIdsResult_landsStruct>()
-    );
-  }
-
   getRoleAdmin(role: Bytes): Bytes {
     let result = super.call("getRoleAdmin", "getRoleAdmin(bytes32):(bytes32)", [
       ethereum.Value.fromFixedBytes(role)
@@ -668,53 +625,6 @@ export class Utopia42Verse extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBytes());
   }
 
-  hasConflict(
-    x1: BigInt,
-    x2: BigInt,
-    y1: BigInt,
-    y2: BigInt,
-    lastLandChecked: BigInt
-  ): boolean {
-    let result = super.call(
-      "hasConflict",
-      "hasConflict(int256,int256,int256,int256,uint256):(bool)",
-      [
-        ethereum.Value.fromSignedBigInt(x1),
-        ethereum.Value.fromSignedBigInt(x2),
-        ethereum.Value.fromSignedBigInt(y1),
-        ethereum.Value.fromSignedBigInt(y2),
-        ethereum.Value.fromUnsignedBigInt(lastLandChecked)
-      ]
-    );
-
-    return result[0].toBoolean();
-  }
-
-  try_hasConflict(
-    x1: BigInt,
-    x2: BigInt,
-    y1: BigInt,
-    y2: BigInt,
-    lastLandChecked: BigInt
-  ): ethereum.CallResult<boolean> {
-    let result = super.tryCall(
-      "hasConflict",
-      "hasConflict(int256,int256,int256,int256,uint256):(bool)",
-      [
-        ethereum.Value.fromSignedBigInt(x1),
-        ethereum.Value.fromSignedBigInt(x2),
-        ethereum.Value.fromSignedBigInt(y1),
-        ethereum.Value.fromSignedBigInt(y2),
-        ethereum.Value.fromUnsignedBigInt(lastLandChecked)
-      ]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
-  }
-
   hasRole(role: Bytes, account: Address): boolean {
     let result = super.call("hasRole", "hasRole(bytes32,address):(bool)", [
       ethereum.Value.fromFixedBytes(role),
@@ -734,44 +644,6 @@ export class Utopia42Verse extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toBoolean());
-  }
-
-  landPrice(x1: BigInt, x2: BigInt, y1: BigInt, y2: BigInt): BigInt {
-    let result = super.call(
-      "landPrice",
-      "landPrice(int256,int256,int256,int256):(uint256)",
-      [
-        ethereum.Value.fromSignedBigInt(x1),
-        ethereum.Value.fromSignedBigInt(x2),
-        ethereum.Value.fromSignedBigInt(y1),
-        ethereum.Value.fromSignedBigInt(y2)
-      ]
-    );
-
-    return result[0].toBigInt();
-  }
-
-  try_landPrice(
-    x1: BigInt,
-    x2: BigInt,
-    y1: BigInt,
-    y2: BigInt
-  ): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "landPrice",
-      "landPrice(int256,int256,int256,int256):(uint256)",
-      [
-        ethereum.Value.fromSignedBigInt(x1),
-        ethereum.Value.fromSignedBigInt(x2),
-        ethereum.Value.fromSignedBigInt(y1),
-        ethereum.Value.fromSignedBigInt(y2)
-      ]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
   landToNFTEnabled(): boolean {
@@ -949,6 +821,21 @@ export class Utopia42Verse extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
+  verseName(): string {
+    let result = super.call("verseName", "verseName():(string)", []);
+
+    return result[0].toString();
+  }
+
+  try_verseName(): ethereum.CallResult<string> {
+    let result = super.tryCall("verseName", "verseName():(string)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toString());
+  }
+
   updateLand(hash: string, landId: BigInt): boolean {
     let result = super.call("updateLand", "updateLand(string,uint256):(bool)", [
       ethereum.Value.fromString(hash),
@@ -974,19 +861,168 @@ export class Utopia42Verse extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
-  verseName(): string {
-    let result = super.call("verseName", "verseName():(string)", []);
+  landPrice(x1: BigInt, x2: BigInt, y1: BigInt, y2: BigInt): BigInt {
+    let result = super.call(
+      "landPrice",
+      "landPrice(int256,int256,int256,int256):(uint256)",
+      [
+        ethereum.Value.fromSignedBigInt(x1),
+        ethereum.Value.fromSignedBigInt(x2),
+        ethereum.Value.fromSignedBigInt(y1),
+        ethereum.Value.fromSignedBigInt(y2)
+      ]
+    );
 
-    return result[0].toString();
+    return result[0].toBigInt();
   }
 
-  try_verseName(): ethereum.CallResult<string> {
-    let result = super.tryCall("verseName", "verseName():(string)", []);
+  try_landPrice(
+    x1: BigInt,
+    x2: BigInt,
+    y1: BigInt,
+    y2: BigInt
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "landPrice",
+      "landPrice(int256,int256,int256,int256):(uint256)",
+      [
+        ethereum.Value.fromSignedBigInt(x1),
+        ethereum.Value.fromSignedBigInt(x2),
+        ethereum.Value.fromSignedBigInt(y1),
+        ethereum.Value.fromSignedBigInt(y2)
+      ]
+    );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
     let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toString());
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  abs(x: BigInt): BigInt {
+    let result = super.call("abs", "abs(int256):(uint256)", [
+      ethereum.Value.fromSignedBigInt(x)
+    ]);
+
+    return result[0].toBigInt();
+  }
+
+  try_abs(x: BigInt): ethereum.CallResult<BigInt> {
+    let result = super.tryCall("abs", "abs(int256):(uint256)", [
+      ethereum.Value.fromSignedBigInt(x)
+    ]);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  getLands(owner: Address): Array<Utopia42Verse__getLandsResult_landsStruct> {
+    let result = super.call(
+      "getLands",
+      "getLands(address):((uint256,int256,int256,int256,int256,uint256,string,bool,address,uint256)[])",
+      [ethereum.Value.fromAddress(owner)]
+    );
+
+    return result[0].toTupleArray<Utopia42Verse__getLandsResult_landsStruct>();
+  }
+
+  try_getLands(
+    owner: Address
+  ): ethereum.CallResult<Array<Utopia42Verse__getLandsResult_landsStruct>> {
+    let result = super.tryCall(
+      "getLands",
+      "getLands(address):((uint256,int256,int256,int256,int256,uint256,string,bool,address,uint256)[])",
+      [ethereum.Value.fromAddress(owner)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(
+      value[0].toTupleArray<Utopia42Verse__getLandsResult_landsStruct>()
+    );
+  }
+
+  getLandsByIds(
+    ids: Array<BigInt>
+  ): Array<Utopia42Verse__getLandsByIdsResult_landsStruct> {
+    let result = super.call(
+      "getLandsByIds",
+      "getLandsByIds(uint256[]):((uint256,int256,int256,int256,int256,uint256,string,bool,address,uint256)[])",
+      [ethereum.Value.fromUnsignedBigIntArray(ids)]
+    );
+
+    return result[0].toTupleArray<
+      Utopia42Verse__getLandsByIdsResult_landsStruct
+    >();
+  }
+
+  try_getLandsByIds(
+    ids: Array<BigInt>
+  ): ethereum.CallResult<
+    Array<Utopia42Verse__getLandsByIdsResult_landsStruct>
+  > {
+    let result = super.tryCall(
+      "getLandsByIds",
+      "getLandsByIds(uint256[]):((uint256,int256,int256,int256,int256,uint256,string,bool,address,uint256)[])",
+      [ethereum.Value.fromUnsignedBigIntArray(ids)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(
+      value[0].toTupleArray<Utopia42Verse__getLandsByIdsResult_landsStruct>()
+    );
+  }
+
+  hasConflict(
+    x1: BigInt,
+    x2: BigInt,
+    y1: BigInt,
+    y2: BigInt,
+    lastLandChecked: BigInt
+  ): boolean {
+    let result = super.call(
+      "hasConflict",
+      "hasConflict(int256,int256,int256,int256,uint256):(bool)",
+      [
+        ethereum.Value.fromSignedBigInt(x1),
+        ethereum.Value.fromSignedBigInt(x2),
+        ethereum.Value.fromSignedBigInt(y1),
+        ethereum.Value.fromSignedBigInt(y2),
+        ethereum.Value.fromUnsignedBigInt(lastLandChecked)
+      ]
+    );
+
+    return result[0].toBoolean();
+  }
+
+  try_hasConflict(
+    x1: BigInt,
+    x2: BigInt,
+    y1: BigInt,
+    y2: BigInt,
+    lastLandChecked: BigInt
+  ): ethereum.CallResult<boolean> {
+    let result = super.tryCall(
+      "hasConflict",
+      "hasConflict(int256,int256,int256,int256,uint256):(bool)",
+      [
+        ethereum.Value.fromSignedBigInt(x1),
+        ethereum.Value.fromSignedBigInt(x2),
+        ethereum.Value.fromSignedBigInt(y1),
+        ethereum.Value.fromSignedBigInt(y2),
+        ethereum.Value.fromUnsignedBigInt(lastLandChecked)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 }
 
@@ -1032,420 +1068,6 @@ export class ConstructorCall__Outputs {
   }
 }
 
-export class NFTToLandCall extends ethereum.Call {
-  get inputs(): NFTToLandCall__Inputs {
-    return new NFTToLandCall__Inputs(this);
-  }
-
-  get outputs(): NFTToLandCall__Outputs {
-    return new NFTToLandCall__Outputs(this);
-  }
-}
-
-export class NFTToLandCall__Inputs {
-  _call: NFTToLandCall;
-
-  constructor(call: NFTToLandCall) {
-    this._call = call;
-  }
-
-  get landId(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-}
-
-export class NFTToLandCall__Outputs {
-  _call: NFTToLandCall;
-
-  constructor(call: NFTToLandCall) {
-    this._call = call;
-  }
-}
-
-export class AdminAssignLandCall extends ethereum.Call {
-  get inputs(): AdminAssignLandCall__Inputs {
-    return new AdminAssignLandCall__Inputs(this);
-  }
-
-  get outputs(): AdminAssignLandCall__Outputs {
-    return new AdminAssignLandCall__Outputs(this);
-  }
-}
-
-export class AdminAssignLandCall__Inputs {
-  _call: AdminAssignLandCall;
-
-  constructor(call: AdminAssignLandCall) {
-    this._call = call;
-  }
-
-  get x1(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-
-  get x2(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
-  }
-
-  get y1(): BigInt {
-    return this._call.inputValues[2].value.toBigInt();
-  }
-
-  get y2(): BigInt {
-    return this._call.inputValues[3].value.toBigInt();
-  }
-
-  get addr(): Address {
-    return this._call.inputValues[4].value.toAddress();
-  }
-
-  get hash(): string {
-    return this._call.inputValues[5].value.toString();
-  }
-}
-
-export class AdminAssignLandCall__Outputs {
-  _call: AdminAssignLandCall;
-
-  constructor(call: AdminAssignLandCall) {
-    this._call = call;
-  }
-}
-
-export class AdminEnableLandToNFTCall extends ethereum.Call {
-  get inputs(): AdminEnableLandToNFTCall__Inputs {
-    return new AdminEnableLandToNFTCall__Inputs(this);
-  }
-
-  get outputs(): AdminEnableLandToNFTCall__Outputs {
-    return new AdminEnableLandToNFTCall__Outputs(this);
-  }
-}
-
-export class AdminEnableLandToNFTCall__Inputs {
-  _call: AdminEnableLandToNFTCall;
-
-  constructor(call: AdminEnableLandToNFTCall) {
-    this._call = call;
-  }
-
-  get val(): boolean {
-    return this._call.inputValues[0].value.toBoolean();
-  }
-}
-
-export class AdminEnableLandToNFTCall__Outputs {
-  _call: AdminEnableLandToNFTCall;
-
-  constructor(call: AdminEnableLandToNFTCall) {
-    this._call = call;
-  }
-}
-
-export class AdminEnableWithoutSigCall extends ethereum.Call {
-  get inputs(): AdminEnableWithoutSigCall__Inputs {
-    return new AdminEnableWithoutSigCall__Inputs(this);
-  }
-
-  get outputs(): AdminEnableWithoutSigCall__Outputs {
-    return new AdminEnableWithoutSigCall__Outputs(this);
-  }
-}
-
-export class AdminEnableWithoutSigCall__Inputs {
-  _call: AdminEnableWithoutSigCall;
-
-  constructor(call: AdminEnableWithoutSigCall) {
-    this._call = call;
-  }
-
-  get val(): boolean {
-    return this._call.inputValues[0].value.toBoolean();
-  }
-}
-
-export class AdminEnableWithoutSigCall__Outputs {
-  _call: AdminEnableWithoutSigCall;
-
-  constructor(call: AdminEnableWithoutSigCall) {
-    this._call = call;
-  }
-}
-
-export class AdminSetIsPublicCall extends ethereum.Call {
-  get inputs(): AdminSetIsPublicCall__Inputs {
-    return new AdminSetIsPublicCall__Inputs(this);
-  }
-
-  get outputs(): AdminSetIsPublicCall__Outputs {
-    return new AdminSetIsPublicCall__Outputs(this);
-  }
-}
-
-export class AdminSetIsPublicCall__Inputs {
-  _call: AdminSetIsPublicCall;
-
-  constructor(call: AdminSetIsPublicCall) {
-    this._call = call;
-  }
-
-  get val(): boolean {
-    return this._call.inputValues[0].value.toBoolean();
-  }
-}
-
-export class AdminSetIsPublicCall__Outputs {
-  _call: AdminSetIsPublicCall;
-
-  constructor(call: AdminSetIsPublicCall) {
-    this._call = call;
-  }
-}
-
-export class AdminSetNFTContractCall extends ethereum.Call {
-  get inputs(): AdminSetNFTContractCall__Inputs {
-    return new AdminSetNFTContractCall__Inputs(this);
-  }
-
-  get outputs(): AdminSetNFTContractCall__Outputs {
-    return new AdminSetNFTContractCall__Outputs(this);
-  }
-}
-
-export class AdminSetNFTContractCall__Inputs {
-  _call: AdminSetNFTContractCall;
-
-  constructor(call: AdminSetNFTContractCall) {
-    this._call = call;
-  }
-
-  get addr(): Address {
-    return this._call.inputValues[0].value.toAddress();
-  }
-}
-
-export class AdminSetNFTContractCall__Outputs {
-  _call: AdminSetNFTContractCall;
-
-  constructor(call: AdminSetNFTContractCall) {
-    this._call = call;
-  }
-}
-
-export class AdminSetVerseNameCall extends ethereum.Call {
-  get inputs(): AdminSetVerseNameCall__Inputs {
-    return new AdminSetVerseNameCall__Inputs(this);
-  }
-
-  get outputs(): AdminSetVerseNameCall__Outputs {
-    return new AdminSetVerseNameCall__Outputs(this);
-  }
-}
-
-export class AdminSetVerseNameCall__Inputs {
-  _call: AdminSetVerseNameCall;
-
-  constructor(call: AdminSetVerseNameCall) {
-    this._call = call;
-  }
-
-  get _newName(): string {
-    return this._call.inputValues[0].value.toString();
-  }
-}
-
-export class AdminSetVerseNameCall__Outputs {
-  _call: AdminSetVerseNameCall;
-
-  constructor(call: AdminSetVerseNameCall) {
-    this._call = call;
-  }
-}
-
-export class AssignLandCall extends ethereum.Call {
-  get inputs(): AssignLandCall__Inputs {
-    return new AssignLandCall__Inputs(this);
-  }
-
-  get outputs(): AssignLandCall__Outputs {
-    return new AssignLandCall__Outputs(this);
-  }
-}
-
-export class AssignLandCall__Inputs {
-  _call: AssignLandCall;
-
-  constructor(call: AssignLandCall) {
-    this._call = call;
-  }
-
-  get x1(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-
-  get x2(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
-  }
-
-  get y1(): BigInt {
-    return this._call.inputValues[2].value.toBigInt();
-  }
-
-  get y2(): BigInt {
-    return this._call.inputValues[3].value.toBigInt();
-  }
-
-  get hash(): string {
-    return this._call.inputValues[4].value.toString();
-  }
-}
-
-export class AssignLandCall__Outputs {
-  _call: AssignLandCall;
-
-  constructor(call: AssignLandCall) {
-    this._call = call;
-  }
-}
-
-export class AssignLandConflictFreeCall extends ethereum.Call {
-  get inputs(): AssignLandConflictFreeCall__Inputs {
-    return new AssignLandConflictFreeCall__Inputs(this);
-  }
-
-  get outputs(): AssignLandConflictFreeCall__Outputs {
-    return new AssignLandConflictFreeCall__Outputs(this);
-  }
-}
-
-export class AssignLandConflictFreeCall__Inputs {
-  _call: AssignLandConflictFreeCall;
-
-  constructor(call: AssignLandConflictFreeCall) {
-    this._call = call;
-  }
-
-  get x1(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-
-  get x2(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
-  }
-
-  get y1(): BigInt {
-    return this._call.inputValues[2].value.toBigInt();
-  }
-
-  get y2(): BigInt {
-    return this._call.inputValues[3].value.toBigInt();
-  }
-
-  get hash(): string {
-    return this._call.inputValues[4].value.toString();
-  }
-
-  get lastLandChecked(): BigInt {
-    return this._call.inputValues[5].value.toBigInt();
-  }
-
-  get sig(): Bytes {
-    return this._call.inputValues[6].value.toBytes();
-  }
-}
-
-export class AssignLandConflictFreeCall__Outputs {
-  _call: AssignLandConflictFreeCall;
-
-  constructor(call: AssignLandConflictFreeCall) {
-    this._call = call;
-  }
-}
-
-export class AssignLandConflictFreeForCall extends ethereum.Call {
-  get inputs(): AssignLandConflictFreeForCall__Inputs {
-    return new AssignLandConflictFreeForCall__Inputs(this);
-  }
-
-  get outputs(): AssignLandConflictFreeForCall__Outputs {
-    return new AssignLandConflictFreeForCall__Outputs(this);
-  }
-}
-
-export class AssignLandConflictFreeForCall__Inputs {
-  _call: AssignLandConflictFreeForCall;
-
-  constructor(call: AssignLandConflictFreeForCall) {
-    this._call = call;
-  }
-
-  get x1(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-
-  get x2(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
-  }
-
-  get y1(): BigInt {
-    return this._call.inputValues[2].value.toBigInt();
-  }
-
-  get y2(): BigInt {
-    return this._call.inputValues[3].value.toBigInt();
-  }
-
-  get hash(): string {
-    return this._call.inputValues[4].value.toString();
-  }
-
-  get lastLandChecked(): BigInt {
-    return this._call.inputValues[5].value.toBigInt();
-  }
-
-  get forAddress(): Address {
-    return this._call.inputValues[6].value.toAddress();
-  }
-}
-
-export class AssignLandConflictFreeForCall__Outputs {
-  _call: AssignLandConflictFreeForCall;
-
-  constructor(call: AssignLandConflictFreeForCall) {
-    this._call = call;
-  }
-}
-
-export class BurnLandCall extends ethereum.Call {
-  get inputs(): BurnLandCall__Inputs {
-    return new BurnLandCall__Inputs(this);
-  }
-
-  get outputs(): BurnLandCall__Outputs {
-    return new BurnLandCall__Outputs(this);
-  }
-}
-
-export class BurnLandCall__Inputs {
-  _call: BurnLandCall;
-
-  constructor(call: BurnLandCall) {
-    this._call = call;
-  }
-
-  get landId(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-}
-
-export class BurnLandCall__Outputs {
-  _call: BurnLandCall;
-
-  constructor(call: BurnLandCall) {
-    this._call = call;
-  }
-}
-
 export class GrantRoleCall extends ethereum.Call {
   get inputs(): GrantRoleCall__Inputs {
     return new GrantRoleCall__Inputs(this);
@@ -1476,36 +1098,6 @@ export class GrantRoleCall__Outputs {
   _call: GrantRoleCall;
 
   constructor(call: GrantRoleCall) {
-    this._call = call;
-  }
-}
-
-export class LandToNFTCall extends ethereum.Call {
-  get inputs(): LandToNFTCall__Inputs {
-    return new LandToNFTCall__Inputs(this);
-  }
-
-  get outputs(): LandToNFTCall__Outputs {
-    return new LandToNFTCall__Outputs(this);
-  }
-}
-
-export class LandToNFTCall__Inputs {
-  _call: LandToNFTCall;
-
-  constructor(call: LandToNFTCall) {
-    this._call = call;
-  }
-
-  get landId(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-}
-
-export class LandToNFTCall__Outputs {
-  _call: LandToNFTCall;
-
-  constructor(call: LandToNFTCall) {
     this._call = call;
   }
 }
@@ -1578,6 +1170,44 @@ export class RevokeRoleCall__Outputs {
   }
 }
 
+export class UpdateLandCall extends ethereum.Call {
+  get inputs(): UpdateLandCall__Inputs {
+    return new UpdateLandCall__Inputs(this);
+  }
+
+  get outputs(): UpdateLandCall__Outputs {
+    return new UpdateLandCall__Outputs(this);
+  }
+}
+
+export class UpdateLandCall__Inputs {
+  _call: UpdateLandCall;
+
+  constructor(call: UpdateLandCall) {
+    this._call = call;
+  }
+
+  get hash(): string {
+    return this._call.inputValues[0].value.toString();
+  }
+
+  get landId(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+}
+
+export class UpdateLandCall__Outputs {
+  _call: UpdateLandCall;
+
+  constructor(call: UpdateLandCall) {
+    this._call = call;
+  }
+
+  get value0(): boolean {
+    return this._call.outputValues[0].value.toBoolean();
+  }
+}
+
 export class TransferLandCall extends ethereum.Call {
   get inputs(): TransferLandCall__Inputs {
     return new TransferLandCall__Inputs(this);
@@ -1646,40 +1276,446 @@ export class TransferNFTLandCall__Outputs {
   }
 }
 
-export class UpdateLandCall extends ethereum.Call {
-  get inputs(): UpdateLandCall__Inputs {
-    return new UpdateLandCall__Inputs(this);
+export class BurnLandCall extends ethereum.Call {
+  get inputs(): BurnLandCall__Inputs {
+    return new BurnLandCall__Inputs(this);
   }
 
-  get outputs(): UpdateLandCall__Outputs {
-    return new UpdateLandCall__Outputs(this);
+  get outputs(): BurnLandCall__Outputs {
+    return new BurnLandCall__Outputs(this);
   }
 }
 
-export class UpdateLandCall__Inputs {
-  _call: UpdateLandCall;
+export class BurnLandCall__Inputs {
+  _call: BurnLandCall;
 
-  constructor(call: UpdateLandCall) {
+  constructor(call: BurnLandCall) {
     this._call = call;
-  }
-
-  get hash(): string {
-    return this._call.inputValues[0].value.toString();
   }
 
   get landId(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
+    return this._call.inputValues[0].value.toBigInt();
   }
 }
 
-export class UpdateLandCall__Outputs {
-  _call: UpdateLandCall;
+export class BurnLandCall__Outputs {
+  _call: BurnLandCall;
 
-  constructor(call: UpdateLandCall) {
+  constructor(call: BurnLandCall) {
+    this._call = call;
+  }
+}
+
+export class AdminAssignLandCall extends ethereum.Call {
+  get inputs(): AdminAssignLandCall__Inputs {
+    return new AdminAssignLandCall__Inputs(this);
+  }
+
+  get outputs(): AdminAssignLandCall__Outputs {
+    return new AdminAssignLandCall__Outputs(this);
+  }
+}
+
+export class AdminAssignLandCall__Inputs {
+  _call: AdminAssignLandCall;
+
+  constructor(call: AdminAssignLandCall) {
     this._call = call;
   }
 
-  get value0(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
+  get x1(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get x2(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+
+  get y1(): BigInt {
+    return this._call.inputValues[2].value.toBigInt();
+  }
+
+  get y2(): BigInt {
+    return this._call.inputValues[3].value.toBigInt();
+  }
+
+  get addr(): Address {
+    return this._call.inputValues[4].value.toAddress();
+  }
+
+  get hash(): string {
+    return this._call.inputValues[5].value.toString();
+  }
+}
+
+export class AdminAssignLandCall__Outputs {
+  _call: AdminAssignLandCall;
+
+  constructor(call: AdminAssignLandCall) {
+    this._call = call;
+  }
+}
+
+export class AssignLandCall extends ethereum.Call {
+  get inputs(): AssignLandCall__Inputs {
+    return new AssignLandCall__Inputs(this);
+  }
+
+  get outputs(): AssignLandCall__Outputs {
+    return new AssignLandCall__Outputs(this);
+  }
+}
+
+export class AssignLandCall__Inputs {
+  _call: AssignLandCall;
+
+  constructor(call: AssignLandCall) {
+    this._call = call;
+  }
+
+  get x1(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get x2(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+
+  get y1(): BigInt {
+    return this._call.inputValues[2].value.toBigInt();
+  }
+
+  get y2(): BigInt {
+    return this._call.inputValues[3].value.toBigInt();
+  }
+
+  get hash(): string {
+    return this._call.inputValues[4].value.toString();
+  }
+}
+
+export class AssignLandCall__Outputs {
+  _call: AssignLandCall;
+
+  constructor(call: AssignLandCall) {
+    this._call = call;
+  }
+}
+
+export class AssignLandConflictFreeForCall extends ethereum.Call {
+  get inputs(): AssignLandConflictFreeForCall__Inputs {
+    return new AssignLandConflictFreeForCall__Inputs(this);
+  }
+
+  get outputs(): AssignLandConflictFreeForCall__Outputs {
+    return new AssignLandConflictFreeForCall__Outputs(this);
+  }
+}
+
+export class AssignLandConflictFreeForCall__Inputs {
+  _call: AssignLandConflictFreeForCall;
+
+  constructor(call: AssignLandConflictFreeForCall) {
+    this._call = call;
+  }
+
+  get x1(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get x2(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+
+  get y1(): BigInt {
+    return this._call.inputValues[2].value.toBigInt();
+  }
+
+  get y2(): BigInt {
+    return this._call.inputValues[3].value.toBigInt();
+  }
+
+  get hash(): string {
+    return this._call.inputValues[4].value.toString();
+  }
+
+  get lastLandChecked(): BigInt {
+    return this._call.inputValues[5].value.toBigInt();
+  }
+
+  get forAddress(): Address {
+    return this._call.inputValues[6].value.toAddress();
+  }
+}
+
+export class AssignLandConflictFreeForCall__Outputs {
+  _call: AssignLandConflictFreeForCall;
+
+  constructor(call: AssignLandConflictFreeForCall) {
+    this._call = call;
+  }
+}
+
+export class AssignLandConflictFreeCall extends ethereum.Call {
+  get inputs(): AssignLandConflictFreeCall__Inputs {
+    return new AssignLandConflictFreeCall__Inputs(this);
+  }
+
+  get outputs(): AssignLandConflictFreeCall__Outputs {
+    return new AssignLandConflictFreeCall__Outputs(this);
+  }
+}
+
+export class AssignLandConflictFreeCall__Inputs {
+  _call: AssignLandConflictFreeCall;
+
+  constructor(call: AssignLandConflictFreeCall) {
+    this._call = call;
+  }
+
+  get x1(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get x2(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+
+  get y1(): BigInt {
+    return this._call.inputValues[2].value.toBigInt();
+  }
+
+  get y2(): BigInt {
+    return this._call.inputValues[3].value.toBigInt();
+  }
+
+  get hash(): string {
+    return this._call.inputValues[4].value.toString();
+  }
+
+  get lastLandChecked(): BigInt {
+    return this._call.inputValues[5].value.toBigInt();
+  }
+
+  get sig(): Bytes {
+    return this._call.inputValues[6].value.toBytes();
+  }
+}
+
+export class AssignLandConflictFreeCall__Outputs {
+  _call: AssignLandConflictFreeCall;
+
+  constructor(call: AssignLandConflictFreeCall) {
+    this._call = call;
+  }
+}
+
+export class LandToNFTCall extends ethereum.Call {
+  get inputs(): LandToNFTCall__Inputs {
+    return new LandToNFTCall__Inputs(this);
+  }
+
+  get outputs(): LandToNFTCall__Outputs {
+    return new LandToNFTCall__Outputs(this);
+  }
+}
+
+export class LandToNFTCall__Inputs {
+  _call: LandToNFTCall;
+
+  constructor(call: LandToNFTCall) {
+    this._call = call;
+  }
+
+  get landId(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+}
+
+export class LandToNFTCall__Outputs {
+  _call: LandToNFTCall;
+
+  constructor(call: LandToNFTCall) {
+    this._call = call;
+  }
+}
+
+export class NFTToLandCall extends ethereum.Call {
+  get inputs(): NFTToLandCall__Inputs {
+    return new NFTToLandCall__Inputs(this);
+  }
+
+  get outputs(): NFTToLandCall__Outputs {
+    return new NFTToLandCall__Outputs(this);
+  }
+}
+
+export class NFTToLandCall__Inputs {
+  _call: NFTToLandCall;
+
+  constructor(call: NFTToLandCall) {
+    this._call = call;
+  }
+
+  get landId(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+}
+
+export class NFTToLandCall__Outputs {
+  _call: NFTToLandCall;
+
+  constructor(call: NFTToLandCall) {
+    this._call = call;
+  }
+}
+
+export class AdminSetIsPublicCall extends ethereum.Call {
+  get inputs(): AdminSetIsPublicCall__Inputs {
+    return new AdminSetIsPublicCall__Inputs(this);
+  }
+
+  get outputs(): AdminSetIsPublicCall__Outputs {
+    return new AdminSetIsPublicCall__Outputs(this);
+  }
+}
+
+export class AdminSetIsPublicCall__Inputs {
+  _call: AdminSetIsPublicCall;
+
+  constructor(call: AdminSetIsPublicCall) {
+    this._call = call;
+  }
+
+  get val(): boolean {
+    return this._call.inputValues[0].value.toBoolean();
+  }
+}
+
+export class AdminSetIsPublicCall__Outputs {
+  _call: AdminSetIsPublicCall;
+
+  constructor(call: AdminSetIsPublicCall) {
+    this._call = call;
+  }
+}
+
+export class AdminSetVerseNameCall extends ethereum.Call {
+  get inputs(): AdminSetVerseNameCall__Inputs {
+    return new AdminSetVerseNameCall__Inputs(this);
+  }
+
+  get outputs(): AdminSetVerseNameCall__Outputs {
+    return new AdminSetVerseNameCall__Outputs(this);
+  }
+}
+
+export class AdminSetVerseNameCall__Inputs {
+  _call: AdminSetVerseNameCall;
+
+  constructor(call: AdminSetVerseNameCall) {
+    this._call = call;
+  }
+
+  get _newName(): string {
+    return this._call.inputValues[0].value.toString();
+  }
+}
+
+export class AdminSetVerseNameCall__Outputs {
+  _call: AdminSetVerseNameCall;
+
+  constructor(call: AdminSetVerseNameCall) {
+    this._call = call;
+  }
+}
+
+export class AdminSetNFTContractCall extends ethereum.Call {
+  get inputs(): AdminSetNFTContractCall__Inputs {
+    return new AdminSetNFTContractCall__Inputs(this);
+  }
+
+  get outputs(): AdminSetNFTContractCall__Outputs {
+    return new AdminSetNFTContractCall__Outputs(this);
+  }
+}
+
+export class AdminSetNFTContractCall__Inputs {
+  _call: AdminSetNFTContractCall;
+
+  constructor(call: AdminSetNFTContractCall) {
+    this._call = call;
+  }
+
+  get addr(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class AdminSetNFTContractCall__Outputs {
+  _call: AdminSetNFTContractCall;
+
+  constructor(call: AdminSetNFTContractCall) {
+    this._call = call;
+  }
+}
+
+export class AdminEnableWithoutSigCall extends ethereum.Call {
+  get inputs(): AdminEnableWithoutSigCall__Inputs {
+    return new AdminEnableWithoutSigCall__Inputs(this);
+  }
+
+  get outputs(): AdminEnableWithoutSigCall__Outputs {
+    return new AdminEnableWithoutSigCall__Outputs(this);
+  }
+}
+
+export class AdminEnableWithoutSigCall__Inputs {
+  _call: AdminEnableWithoutSigCall;
+
+  constructor(call: AdminEnableWithoutSigCall) {
+    this._call = call;
+  }
+
+  get val(): boolean {
+    return this._call.inputValues[0].value.toBoolean();
+  }
+}
+
+export class AdminEnableWithoutSigCall__Outputs {
+  _call: AdminEnableWithoutSigCall;
+
+  constructor(call: AdminEnableWithoutSigCall) {
+    this._call = call;
+  }
+}
+
+export class AdminEnableLandToNFTCall extends ethereum.Call {
+  get inputs(): AdminEnableLandToNFTCall__Inputs {
+    return new AdminEnableLandToNFTCall__Inputs(this);
+  }
+
+  get outputs(): AdminEnableLandToNFTCall__Outputs {
+    return new AdminEnableLandToNFTCall__Outputs(this);
+  }
+}
+
+export class AdminEnableLandToNFTCall__Inputs {
+  _call: AdminEnableLandToNFTCall;
+
+  constructor(call: AdminEnableLandToNFTCall) {
+    this._call = call;
+  }
+
+  get val(): boolean {
+    return this._call.inputValues[0].value.toBoolean();
+  }
+}
+
+export class AdminEnableLandToNFTCall__Outputs {
+  _call: AdminEnableLandToNFTCall;
+
+  constructor(call: AdminEnableLandToNFTCall) {
+    this._call = call;
   }
 }

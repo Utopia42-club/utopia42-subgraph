@@ -6,9 +6,9 @@ dataSources:
     name: Utopia42Settings
     network: mumbai
     source:
-      address: "0xa4c68917367Bcfbfc495752a47f7A86450DFB042"
+      address: "0x949d724f293eE9e3171AA00FE534C24eB097b1FE"
       abi: Utopia42Settings
-      startBlock: 27453801
+      startBlock: 27577117
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6

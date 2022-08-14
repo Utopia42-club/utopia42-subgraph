@@ -6,9 +6,9 @@ dataSources:
     name: Utopia42VerseFactory
     network: mumbai
     source:
-      address: "0xA59Dd46033E0e92Cae52468952A988d7e29e7D11"
+      address: "0x71E9d0bB75EC8320d0Af229e957e9dc28E84f4b9"
       abi: Utopia42VerseFactory
-      startBlock: 27453766
+      startBlock: 27620998
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -52,6 +52,10 @@ templates:
           handler: handleLandUpdate
         - event: LandTransfer(uint256,address,address)
           handler: handleLandTransfer
+        - event: NFTToLandSet(uint256)
+          handler: handleNftToLand
+        - event: LandToNFTSet(uint256)
+          handler: handleLandToNft
   - kind: ethereum/contract
     name: UtopiaNFT
     network: mumbai

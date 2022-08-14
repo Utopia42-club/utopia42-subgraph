@@ -1,6 +1,6 @@
 import { Factory, IpfsData, Land, Particle, Verse, BurnedLand, LandsTransfer } from "../generated/schema";
 import { Address, BigInt, Bytes, ipfs, json, JSONValue, log, store, TypedMap, } from "@graphprotocol/graph-ts";
-import { Assign, Burn, LandUpdate, LandTransfer, Utopia42Verse} from "../generated/templates/Utopia42Verse/Utopia42Verse";
+import { Assign, Burn, LandUpdate, LandTransfer, NFTToLandSet, LandToNFTSet} from "../generated/templates/Utopia42Verse/Utopia42Verse";
 import { VerseCreated } from "../generated/Utopia42VerseFactory/Utopia42VerseFactory";
 import { Utopia42Verse as Utopia42VerseCreator, UtopiaNFT as UtopiaNFTCreator } from '../generated/templates'
 import { fetchERC721 } from "../fetch/erc721";
@@ -287,6 +287,34 @@ export function handleLandTransfer(event: LandTransfer): void
     land.owner = event.params.to
     land.save()
     landTransfer.save();
+}
+
+export function handleNftToLand(event: NFTToLandSet): void {
+    const landId = event.params.landId
+    const verseAddress = event.address
+    const id = calculateLandId(verseAddress, landId)
+    const land = Land.load(id.toHex())
+    if (!land) {
+        log.warning("NFTToLandSet event ignored since no land with id {} exists on verse {}. (Tx {})",
+            [landId.toHexString(), verseAddress.toHexString(), event.transaction.hash.toHexString()])
+        return;
+    }
+    land.isNFT = false
+    land.save()
+}
+
+export function handleLandToNft(event: LandToNFTSet): void {
+    const landId = event.params.landId
+    const verseAddress = event.address
+    const id = calculateLandId(verseAddress, landId)
+    const land = Land.load(id.toHex())
+    if (!land) {
+        log.warning("NFTToLandSet event ignored since no land with id {} exists on verse {}. (Tx {})",
+            [landId.toHexString(), verseAddress.toHexString(), event.transaction.hash.toHexString()])
+        return;
+    }
+    land.isNFT = true
+    land.save()
 }
 
 function calculateLandId(contract: Address, landId: BigInt): Bytes
