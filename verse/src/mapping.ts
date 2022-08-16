@@ -285,6 +285,7 @@ export function handleLandTransfer(event: LandTransfer): void
     landTransfer.timestamp = event.block.timestamp
     landTransfer.land = land.id
     land.owner = event.params.to
+    land.update_time = event.block.timestamp
     land.save()
     landTransfer.save();
 }
@@ -300,6 +301,7 @@ export function handleNftToLand(event: NFTToLandSet): void {
         return;
     }
     land.isNFT = false
+    land.update_time = event.block.timestamp
     land.save()
 }
 
@@ -314,6 +316,7 @@ export function handleLandToNft(event: LandToNFTSet): void {
         return;
     }
     land.isNFT = true
+    land.update_time = event.block.timestamp
     land.save()
 }
 
