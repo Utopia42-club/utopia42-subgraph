@@ -4,11 +4,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: Utopia42VerseFactory
-    network: mumbai
+    network: matic
     source:
-      address: "0x71E9d0bB75EC8320d0Af229e957e9dc28E84f4b9"
+      address: "0xFcdF8f39CFe0a928081cC8C4D0eF3f6E2CE5452E"
       abi: Utopia42VerseFactory
-      startBlock: 27620998
+      startBlock: 31961084
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -29,7 +29,7 @@ dataSources:
 templates:
   - kind: ethereum/contract
     name: Utopia42Verse
-    network: mumbai
+    network: matic
     source:
       abi: Utopia42Verse
     mapping:
@@ -58,7 +58,7 @@ templates:
           handler: handleLandToNft
   - kind: ethereum/contract
     name: UtopiaNFT
-    network: mumbai
+    network: matic
     source:
       abi: UtopiaNFT
     mapping:

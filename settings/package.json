@@ -4,7 +4,8 @@
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy-mumbai": "graph deploy --node https://api.thegraph.com/deploy/ jafari-mi/utopia42-settings-mumbai"
+    "deploy-mumbai": "graph deploy --node https://api.thegraph.com/deploy/ jafari-mi/utopia42-settings-mumbai",
+    "deploy-polygon": "graph deploy --product hosted-service jafari-mi/utopia42-settings-polygon"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.33.0",
