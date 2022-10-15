@@ -1,0 +1,7 @@
+{
+  "output": "generated/matic.",
+  "chain": "matic",
+  "datasources": [
+    { "address": "0xEDa45366e9135920403A15Dc697b021f80Ff9d2D", "startBlock": 31961197, "module": [ "erc721", "ownable" ] }
+  ]
+}
