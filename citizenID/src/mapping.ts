@@ -4,7 +4,7 @@ import {
 } from "../generated/citizenVerification/CitizenIDVerification"
 import { CitizenIDVerification } from "../generated/schema"
 
-export function handleAddCollection(event: BrightIDSet): void {
+export function handleBrightIDSet(event: BrightIDSet): void {
   let entity = CitizenIDVerification.load(event.params.nftId.toString())
 
   if (!entity) {
