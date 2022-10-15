@@ -715,3 +715,67 @@ export class Transaction extends Entity {
     this.set("events", Value.fromStringArray(value));
   }
 }
+
+export class CitizenIDVerification extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(
+      id != null,
+      "Cannot save CitizenIDVerification entity without an ID"
+    );
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type CitizenIDVerification must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("CitizenIDVerification", id.toString(), this);
+    }
+  }
+
+  static load(id: string): CitizenIDVerification | null {
+    return changetype<CitizenIDVerification | null>(
+      store.get("CitizenIDVerification", id)
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get tokenId(): BigInt {
+    let value = this.get("tokenId");
+    return value!.toBigInt();
+  }
+
+  set tokenId(value: BigInt) {
+    this.set("tokenId", Value.fromBigInt(value));
+  }
+
+  get verifier(): Bytes {
+    let value = this.get("verifier");
+    return value!.toBytes();
+  }
+
+  set verifier(value: Bytes) {
+    this.set("verifier", Value.fromBytes(value));
+  }
+
+  get citizen(): Bytes {
+    let value = this.get("citizen");
+    return value!.toBytes();
+  }
+
+  set citizen(value: Bytes) {
+    this.set("citizen", Value.fromBytes(value));
+  }
+}

@@ -73,3 +73,10 @@ type Transaction @entity(immutable: true) {
 	blockNumber: BigInt!
 	events: [Event!]! @derivedFrom(field: "transaction")
 }
+
+type CitizenIDVerification @entity {
+	id: ID!
+	tokenId: BigInt!
+	verifier: Bytes!
+	citizen: Bytes!
+}
