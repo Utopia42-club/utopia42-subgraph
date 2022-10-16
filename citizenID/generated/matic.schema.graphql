@@ -80,3 +80,8 @@ type CitizenIDVerification @entity {
 	verifier: Bytes!
 	citizen: Bytes!
 }
+
+type Counter @entity {
+	id: ID!
+	totalVerified: BigInt!
+}
